@@ -45,8 +45,6 @@ export default function Model() {
 
   useFrame((state) => {
     if (!groupRef.current) return
-    const time = state.clock.getElapsedTime()
-    groupRef.current.position.y = Math.sin(time * 0.6 + floatOffset) * 0.2
     const targetScale = hovered ? 1.05 : 1
     groupRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1)
     groupRef.current.rotation.y += 0.002
