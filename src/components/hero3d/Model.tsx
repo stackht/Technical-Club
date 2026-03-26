@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
-import { PresentationControls, useCursor, useGLTF } from "@react-three/drei"
+import { useCursor, useGLTF } from "@react-three/drei"
 import { Group } from "three"
 import { DRACOLoader } from "three-stdlib"
 import { useFrame } from "@react-three/fiber"
@@ -58,22 +58,14 @@ export default function Model() {
   })
 
   return (
-    <PresentationControls
-      global
-      rotation={[0.1, 0, 0]}
-      polar={[-0.6, 0.6]}
-      azimuth={[-1.2, 1.2]}
-      speed={1.5}
+    <group
+      ref={groupRef}
+      onPointerOver={() => setHovered(true)}
+      onPointerOut={() => setHovered(false)}
+      position={[0, -0.6, 0]}
     >
-      <group
-        ref={groupRef}
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-        position={[0, -0.6, 0]}
-      >
-        <primitive object={scene} scale={2.2} />
-      </group>
-    </PresentationControls>
+      <primitive object={scene} scale={2.2} />
+    </group>
   )
 }
 
