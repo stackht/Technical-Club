@@ -64,6 +64,6 @@ const config = {
     themes: ["dark"],
     darkTheme: "dark",
   },
-} satisfies Config
+} satisfies Config & { daisyui: { themes: string[]; darkTheme: string } }
 
 export default config
