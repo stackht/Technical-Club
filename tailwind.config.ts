@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss"
 import daisyui from "daisyui"
 
-const config: Config = {
+const config = {
   darkMode: "class",
   content: [
     "./src/app/**/*.{ts,tsx}",
@@ -59,10 +59,11 @@ const config: Config = {
     },
   },
   plugins: [daisyui],
+  // DaisyUI config (cast to avoid type errors in strict TS)
   daisyui: {
     themes: ["dark"],
     darkTheme: "dark",
   },
-}
+} satisfies Config
 
 export default config
