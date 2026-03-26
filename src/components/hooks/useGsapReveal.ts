@@ -6,7 +6,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger"
 
 gsap.registerPlugin(ScrollTrigger)
 
-export function useGsapReveal(ref: React.RefObject<HTMLElement>) {
+export function useGsapReveal(ref: React.RefObject<HTMLElement | null>) {
   useEffect(() => {
     const element = ref.current
     if (!element) return
