@@ -9,11 +9,17 @@ import * as THREE from "three"
 
 const dracoLoader = new DRACOLoader()
 dracoLoader.setDecoderPath("/draco/")
-useGLTF.setDRACOLoader(dracoLoader)
 
 export default function Model() {
   const groupRef = useRef<Group>(null)
-  const { scene } = useGLTF("/models/model.glb")
+  const { scene } = useGLTF(
+    "/models/model.glb",
+    true,
+    undefined,
+    (loader) => {
+      loader.setDRACOLoader(dracoLoader)
+    },
+  )
   const [hovered, setHovered] = useState(false)
   const floatOffset = useMemo(() => Math.random() * Math.PI * 2, [])
   const emissiveMaterials = useRef<THREE.MeshStandardMaterial[]>([])
