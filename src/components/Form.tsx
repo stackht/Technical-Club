@@ -340,12 +340,12 @@ export default function FormSection() {
 
       {showChallenges && (
         <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 px-6">
-          <div className="w-full max-w-4xl rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
+          <div className="w-full max-w-5xl rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
             <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3 text-xs uppercase tracking-[0.35em] text-white/70">
               <span>Cmd Problem Shell</span>
               <span className="text-neonGreen/80">CMD</span>
             </div>
-            <div className="space-y-4 text-sm text-white/80">
+            <div className="space-y-4 text-sm text-white/80 max-h-[70vh] overflow-y-auto pr-2">
               <div className="text-neonGreen/80">Problem Statements</div>
               <div className="grid gap-4 md:grid-cols-2">
                 {challenges.map((item, index) => (
