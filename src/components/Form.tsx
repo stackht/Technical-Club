@@ -41,11 +41,15 @@ export default function FormSection() {
     dispatch(setStatus("loading"))
     setMessage("")
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
       const response = await fetch(`${apiBase}/auth/request-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, phone, year, branch }),
+        signal: controller.signal,
       })
+      clearTimeout(timeout)
       const data = await response.json()
       if (!response.ok) throw new Error(data.message || "Failed to send OTP.")
       dispatch(setStatus("success"))
@@ -53,7 +57,7 @@ export default function FormSection() {
       setMessage("OTP sent to your email.")
     } catch (error: any) {
       dispatch(setStatus("error"))
-      setMessage(error.message || "Something went wrong.")
+      setMessage(error.name === "AbortError" ? "Request timed out." : error.message || "Something went wrong.")
     }
   }
 
@@ -61,11 +65,15 @@ export default function FormSection() {
     dispatch(setStatus("loading"))
     setMessage("")
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
       const response = await fetch(`${apiBase}/auth/verify-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp }),
+        signal: controller.signal,
       })
+      clearTimeout(timeout)
       const data = await response.json()
       if (!response.ok) throw new Error(data.message || "Invalid OTP.")
       dispatch(setStatus("success"))
@@ -73,7 +81,7 @@ export default function FormSection() {
       setMessage("OTP verified. Create your account.")
     } catch (error: any) {
       dispatch(setStatus("error"))
-      setMessage(error.message || "OTP verification failed.")
+      setMessage(error.name === "AbortError" ? "Request timed out." : error.message || "OTP verification failed.")
     }
   }
 
@@ -81,19 +89,27 @@ export default function FormSection() {
     dispatch(setStatus("loading"))
     setMessage("")
     try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
       const response = await fetch(`${apiBase}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, username, password }),
+        signal: controller.signal,
       })
+      clearTimeout(timeout)
       const data = await response.json()
       if (!response.ok) throw new Error(data.message || "Registration failed.")
 
+      const loginController = new AbortController()
+      const loginTimeout = setTimeout(() => loginController.abort(), 15000)
       const loginResponse = await fetch(`${apiBase}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ identifier: username, password }),
+        signal: loginController.signal,
       })
+      clearTimeout(loginTimeout)
       const loginData = await loginResponse.json()
       if (loginResponse.ok && loginData.token) {
         localStorage.setItem("cmd_token", loginData.token)
@@ -105,7 +121,7 @@ export default function FormSection() {
       dispatch(resetForm())
     } catch (error: any) {
       dispatch(setStatus("error"))
-      setMessage(error.message || "Registration failed.")
+      setMessage(error.name === "AbortError" ? "Request timed out." : error.message || "Registration failed.")
     }
   }
 

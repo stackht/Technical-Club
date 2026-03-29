@@ -51,6 +51,9 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
+  connectionTimeout: 10_000,
+  greetingTimeout: 10_000,
+  socketTimeout: 15_000,
 })
 
 const requestOtpSchema = z.object({
@@ -88,12 +91,16 @@ async function sendMail({ to, subject, text }) {
   if (!process.env.SMTP_HOST) {
     throw new Error("SMTP not configured")
   }
-  await transporter.sendMail({
+  const send = transporter.sendMail({
     from: process.env.SMTP_FROM || process.env.SMTP_USER,
     to,
     subject,
     text,
   })
+  const timeout = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("SMTP timeout")), 15_000),
+  )
+  await Promise.race([send, timeout])
 }
 
 app.get("/health", (req, res) => {
