@@ -145,7 +145,7 @@ function buildOtpEmail(otp, ttlMinutes) {
     `Valid for: ${ttlMinutes} minutes`,
     "",
     "If you did not request this code, ignore this message.",
-    "— CMD System",
+    "— CMD Decryptors",
   ].join("\n")
 
   const header = `
@@ -173,7 +173,7 @@ function buildOtpEmail(otp, ttlMinutes) {
           <div style="opacity:0.85;">Valid for <strong>${ttlMinutes} minutes</strong>.</div>
           <div style="margin:18px 0 0;border-top:1px solid #1f2a1f;"></div>
           <div style="margin-top:14px;font-size:12px;opacity:0.7;">If you did not request this code, ignore this message.</div>
-          <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD System</div>
+        <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD Decryptors</div>
         </div>
       </div>
     </div>
@@ -189,7 +189,7 @@ function buildConfirmEmail() {
     "Your registration is complete.",
     "Welcome to CMD. You can now log in with your username and password.",
     "",
-    "— CMD System",
+    "— CMD Decryptors",
   ].join("\n")
 
   const html = `
@@ -211,7 +211,7 @@ function buildConfirmEmail() {
               Your registration is complete. You can now log in using your username and password.
             </div>
             <div style="margin:18px 0 0;border-top:1px solid #1f2a1f;"></div>
-            <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD System</div>
+            <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD Decryptors</div>
           </div>
         </div>
       </div>
