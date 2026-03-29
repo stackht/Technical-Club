@@ -39,7 +39,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
   }
 
   useEffect(() => {
-    const fullText = "Code Disk"
+    const fullText = "Code Medium"
     let index = 0
     const interval = setInterval(() => {
       index += 1
@@ -134,7 +134,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
     <>
       {variant === "centered" && (
         <div className="terminal-header terminal-header-layer pointer-events-auto fixed left-0 right-0 top-6 mx-auto flex w-full max-w-6xl items-center justify-between text-xs uppercase tracking-[0.35em] text-white/60">
-          <div className="terminal-titlebar">Code Disk</div>
+          <div className="terminal-titlebar">Cmd</div>
           <div className="terminal-tabs flex items-center gap-4">
             {[
               { label: "Home", id: "hero-centered" },
