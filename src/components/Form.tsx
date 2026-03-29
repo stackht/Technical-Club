@@ -35,6 +35,15 @@ export default function FormSection() {
   ]
 
   useEffect(() => {
+    if (showChallenges) {
+      document.body.style.overflow = "hidden"
+      return () => {
+        document.body.style.overflow = ""
+      }
+    }
+  }, [showChallenges])
+
+  useEffect(() => {
     if (status === "success" && buttonRef.current) {
       gsap.fromTo(
         buttonRef.current,
@@ -330,51 +339,51 @@ export default function FormSection() {
       </div>
 
       {showChallenges && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 px-6">
-          <div className="glass-panel hacker-scan w-full max-w-3xl rounded-xl border border-neonGreen/40 p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 px-6">
+          <div className="w-full max-w-4xl rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
             <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3 text-xs uppercase tracking-[0.35em] text-white/70">
-              <span>Windows PowerShell</span>
+              <span>Cmd Problem Shell</span>
               <span className="text-neonGreen/80">CMD</span>
             </div>
             <div className="space-y-4 text-sm text-white/80">
               <div className="text-neonGreen/80">Problem Statements</div>
-              <ol className="list-decimal space-y-3 pl-5">
+              <div className="grid gap-4 md:grid-cols-2">
                 {challenges.map((item, index) => (
-                  <li key={item} className="flex gap-3">
-                    <input
-                      type="radio"
-                      name="challenge"
-                      className="mt-1 accent-neonGreen"
-                      checked={selectedChallenge === index + 1}
-                      onChange={() => setSelectedChallenge(index + 1)}
-                    />
-                    <span>{item}</span>
-                  </li>
+                  <div
+                    key={item}
+                    className="rounded-lg border border-white/10 bg-black/60 p-4 shadow-inner shadow-black/60"
+                  >
+                    <div className="text-xs uppercase tracking-[0.2em] text-neonGreen/70">
+                      Problem {index + 1}
+                    </div>
+                    <div className="mt-2 text-sm text-white/80">{item}</div>
+                    <div className="mt-4 flex justify-end">
+                      <Button
+                        className="min-w-[140px]"
+                        onClick={async () => {
+                          setSelectedChallenge(index + 1)
+                          const token = localStorage.getItem("cmd_token")
+                          if (!token) return
+                          await fetch(`${apiBase}/challenges/submit`, {
+                            method: "POST",
+                            headers: {
+                              "Content-Type": "application/json",
+                              Authorization: `Bearer ${token}`,
+                            },
+                            body: JSON.stringify({
+                              statementId: index + 1,
+                              statement: item,
+                            }),
+                          })
+                          setShowChallenges(false)
+                        }}
+                      >
+                        Seal
+                      </Button>
+                    </div>
+                  </div>
                 ))}
-              </ol>
-            </div>
-            <div className="mt-6 flex justify-end">
-              <Button
-                className="min-w-[160px]"
-                onClick={async () => {
-                  const token = localStorage.getItem("cmd_token")
-                  if (!token) return
-                  await fetch(`${apiBase}/challenges/submit`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                      Authorization: `Bearer ${token}`,
-                    },
-                    body: JSON.stringify({
-                      statementId: selectedChallenge,
-                      statement: challenges[selectedChallenge - 1],
-                    }),
-                  })
-                  setShowChallenges(false)
-                }}
-              >
-                Seal
-              </Button>
+              </div>
             </div>
           </div>
         </div>
