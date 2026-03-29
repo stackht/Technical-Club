@@ -226,9 +226,11 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
               }}
               onClick={() => {
                 const scroller = document.querySelector(".scroll-stage") as HTMLElement | null
-                const form = document.getElementById("participate")
-                if (!form || !scroller) return
-                form.scrollIntoView({ behavior: "smooth", block: "start" })
+                const target = document.getElementById("participate")
+                if (!target || !scroller) return
+                const targetCenter = target.offsetTop + target.offsetHeight / 2
+                const scrollTop = targetCenter - scroller.clientHeight / 2
+                scroller.scrollTo({ top: Math.max(scrollTop, 0), behavior: "smooth" })
               }}
             >
               <span>Join Now</span>

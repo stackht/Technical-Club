@@ -166,11 +166,15 @@ function buildOtpEmail(otp, ttlMinutes) {
         ${header}
         <div style="padding:22px 22px 18px;color:#dff0df;">
           <div style="letter-spacing:0.35em;color:#7fe67f;font-size:12px;text-transform:uppercase;">CMD // Access Verification</div>
-          <div style="margin:14px 0 6px;font-size:18px;">One-Time Password</div>
+          <div style="margin:14px 0 6px;font-size:18px;">
+            One-Time <span style="color:#9dff9d;">Password</span>
+          </div>
           <div style="display:inline-block;margin:10px 0 16px;padding:10px 14px;border:1px dashed #2d3d2d;border-radius:6px;background:#0a120a;color:#b7ffb7;font-size:26px;letter-spacing:0.24em;">
             ${otp}
           </div>
-          <div style="opacity:0.85;">Valid for <strong>${ttlMinutes} minutes</strong>.</div>
+          <div style="opacity:0.85;">
+            Valid for <strong style="color:#b7ffb7;">${ttlMinutes} minutes</strong>.
+          </div>
           <div style="margin:18px 0 0;border-top:1px solid #1f2a1f;"></div>
           <div style="margin-top:14px;font-size:12px;opacity:0.7;">If you did not request this code, ignore this message.</div>
         <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD Decryptors</div>
@@ -206,9 +210,12 @@ function buildConfirmEmail() {
           </div>
           <div style="padding:22px 22px 18px;color:#dff0df;">
             <div style="letter-spacing:0.35em;color:#7fe67f;font-size:12px;text-transform:uppercase;">CMD // Registration Confirmed</div>
-            <div style="margin:14px 0 6px;font-size:18px;">Welcome to CMD</div>
+            <div style="margin:14px 0 6px;font-size:18px;">
+              Welcome to <span style="color:#9dff9d;">CMD</span>
+            </div>
             <div style="opacity:0.85;line-height:1.7;">
-              Your registration is complete. You can now log in using your username and password.
+              Your registration is <span style="color:#b7ffb7;">complete</span>. You can now
+              <span style="color:#b7ffb7;"> log in</span> using your username and password.
             </div>
             <div style="margin:18px 0 0;border-top:1px solid #1f2a1f;"></div>
             <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD Decryptors</div>
