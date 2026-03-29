@@ -34,6 +34,7 @@ export default function Home() {
     const scroller = scrollRef.current
     if (!scroller) return
     const handleWheel = (event: WheelEvent) => {
+      if (document.body.dataset.modalOpen === "true") return
       scroller.scrollTop += event.deltaY
     }
     window.addEventListener("wheel", handleWheel, { passive: true })

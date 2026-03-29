@@ -37,8 +37,10 @@ export default function FormSection() {
   useEffect(() => {
     if (showChallenges) {
       document.body.style.overflow = "hidden"
+      document.body.dataset.modalOpen = "true"
       return () => {
         document.body.style.overflow = ""
+        delete document.body.dataset.modalOpen
       }
     }
   }, [showChallenges])
@@ -339,8 +341,8 @@ export default function FormSection() {
       </div>
 
       {showChallenges && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 px-6">
-          <div className="w-full max-w-5xl rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-start bg-black/80 px-6">
+          <div className="w-full max-w-4xl rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
             <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3 text-xs uppercase tracking-[0.35em] text-white/70">
               <span>Cmd Problem Shell</span>
               <span className="text-neonGreen/80">CMD</span>
