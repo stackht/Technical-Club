@@ -20,6 +20,7 @@ export default function FormSection() {
     "details",
   )
   const [message, setMessage] = useState("")
+  const [showChallenges, setShowChallenges] = useState(false)
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
   useEffect(() => {
@@ -118,6 +119,7 @@ export default function FormSection() {
       dispatch(setStatus("success"))
       setStep("done")
       setMessage("Registration complete. You are now logged in.")
+      setShowChallenges(true)
       dispatch(resetForm())
     } catch (error: any) {
       dispatch(setStatus("error"))
@@ -315,6 +317,62 @@ export default function FormSection() {
           </div>
         </motion.form>
       </div>
+
+      {showChallenges && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 px-6">
+          <div className="glass-panel hacker-scan w-full max-w-3xl rounded-xl border border-neonGreen/40 p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
+            <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3 text-xs uppercase tracking-[0.35em] text-white/70">
+              <span>Windows PowerShell</span>
+              <span className="text-neonGreen/80">CMD</span>
+            </div>
+            <div className="space-y-4 text-sm text-white/80">
+              <div className="text-neonGreen/80">Problem Statements</div>
+              <ol className="list-decimal space-y-3 pl-5">
+                <li>
+                  Unused Mobile Data — Design a system where users can save, transfer,
+                  or monetize unused data efficiently.
+                </li>
+                <li>
+                  Mumbai Local Ticket Verification — Design a frictionless ticket
+                  verification system that reduces time while preventing fraud.
+                </li>
+                <li>
+                  Fast Language Learning — Design a solution that drastically reduces
+                  learning time while maximizing practical fluency.
+                </li>
+                <li>
+                  Bank SMS Charges Problem — Reduce or replace SMS alerts while
+                  maintaining security and regulatory compliance.
+                </li>
+                <li>
+                  Future of Developers vs AI — How can a human developer stay relevant
+                  or outperform AI?
+                </li>
+                <li>
+                  AI for College Admin — Reduce workload for attendance, assignments,
+                  grading, communication, and administration.
+                </li>
+                <li>
+                  Smart Wearable for Color Vision Deficiency — Detect and communicate
+                  colors in real-time with fast, accurate feedback.
+                </li>
+                <li>
+                  OTP Fraud Prevention — Prevent or reduce OTP sharing fraud with a
+                  simple, secure user experience.
+                </li>
+              </ol>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <Button
+                className="min-w-[160px]"
+                onClick={() => setShowChallenges(false)}
+              >
+                Seal
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
