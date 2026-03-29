@@ -21,7 +21,18 @@ export default function FormSection() {
   )
   const [message, setMessage] = useState("")
   const [showChallenges, setShowChallenges] = useState(false)
+  const [selectedChallenge, setSelectedChallenge] = useState(1)
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
+  const challenges = [
+    "Unused Mobile Data — Design a system where users can save, transfer, or monetize unused data efficiently.",
+    "Mumbai Local Ticket Verification — Design a frictionless ticket verification system that reduces time while preventing fraud.",
+    "Fast Language Learning — Design a solution that drastically reduces learning time while maximizing practical fluency.",
+    "Bank SMS Charges Problem — Reduce or replace SMS alerts while maintaining security and regulatory compliance.",
+    "Future of Developers vs AI — How can a human developer stay relevant or outperform AI?",
+    "AI for College Admin — Reduce workload for attendance, assignments, grading, communication, and administration.",
+    "Smart Wearable for Color Vision Deficiency — Detect and communicate colors in real-time with fast, accurate feedback.",
+    "OTP Fraud Prevention — Prevent or reduce OTP sharing fraud with a simple, secure user experience.",
+  ]
 
   useEffect(() => {
     if (status === "success" && buttonRef.current) {
@@ -328,44 +339,39 @@ export default function FormSection() {
             <div className="space-y-4 text-sm text-white/80">
               <div className="text-neonGreen/80">Problem Statements</div>
               <ol className="list-decimal space-y-3 pl-5">
-                <li>
-                  Unused Mobile Data — Design a system where users can save, transfer,
-                  or monetize unused data efficiently.
-                </li>
-                <li>
-                  Mumbai Local Ticket Verification — Design a frictionless ticket
-                  verification system that reduces time while preventing fraud.
-                </li>
-                <li>
-                  Fast Language Learning — Design a solution that drastically reduces
-                  learning time while maximizing practical fluency.
-                </li>
-                <li>
-                  Bank SMS Charges Problem — Reduce or replace SMS alerts while
-                  maintaining security and regulatory compliance.
-                </li>
-                <li>
-                  Future of Developers vs AI — How can a human developer stay relevant
-                  or outperform AI?
-                </li>
-                <li>
-                  AI for College Admin — Reduce workload for attendance, assignments,
-                  grading, communication, and administration.
-                </li>
-                <li>
-                  Smart Wearable for Color Vision Deficiency — Detect and communicate
-                  colors in real-time with fast, accurate feedback.
-                </li>
-                <li>
-                  OTP Fraud Prevention — Prevent or reduce OTP sharing fraud with a
-                  simple, secure user experience.
-                </li>
+                {challenges.map((item, index) => (
+                  <li key={item} className="flex gap-3">
+                    <input
+                      type="radio"
+                      name="challenge"
+                      className="mt-1 accent-neonGreen"
+                      checked={selectedChallenge === index + 1}
+                      onChange={() => setSelectedChallenge(index + 1)}
+                    />
+                    <span>{item}</span>
+                  </li>
+                ))}
               </ol>
             </div>
             <div className="mt-6 flex justify-end">
               <Button
                 className="min-w-[160px]"
-                onClick={() => setShowChallenges(false)}
+                onClick={async () => {
+                  const token = localStorage.getItem("cmd_token")
+                  if (!token) return
+                  await fetch(`${apiBase}/challenges/submit`, {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                      statementId: selectedChallenge,
+                      statement: challenges[selectedChallenge - 1],
+                    }),
+                  })
+                  setShowChallenges(false)
+                }}
               >
                 Seal
               </Button>

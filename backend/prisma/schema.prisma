@@ -16,6 +16,7 @@ model User {
   year         String
   branch       String
   createdAt    DateTime @default(now())
+  challenges   UserChallenge[]
 }
 
 model OtpToken {
@@ -31,4 +32,16 @@ model OtpToken {
   consumedAt DateTime?
 
   @@index([email, createdAt])
+}
+
+model UserChallenge {
+  id         String   @id @default(cuid())
+  userId     String
+  statementId Int
+  statement Text
+  createdAt  DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
 }

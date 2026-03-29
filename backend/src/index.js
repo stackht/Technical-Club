@@ -88,6 +88,24 @@ const loginSchema = z.object({
   password: z.string().min(6).max(128),
 })
 
+const challengeSchema = z.object({
+  statementId: z.number().int().min(1).max(8),
+  statement: z.string().min(10).max(1000),
+})
+
+function authRequired(req, res, next) {
+  const header = req.headers.authorization || ""
+  const token = header.startsWith("Bearer ") ? header.slice(7) : null
+  if (!token) return res.status(401).json({ ok: false, message: "Unauthorized" })
+  try {
+    const payload = jwt.verify(token, JWT_SECRET)
+    req.userId = payload.sub
+    next()
+  } catch {
+    return res.status(401).json({ ok: false, message: "Unauthorized" })
+  }
+}
+
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString()
 }
@@ -434,6 +452,23 @@ app.post("/auth/login", async (req, res) => {
       token,
       user: { id: user.id, email: user.email, username: user.username },
     })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.post("/challenges/submit", authRequired, async (req, res) => {
+  try {
+    const data = challengeSchema.parse(req.body)
+    const userId = req.userId
+    await prisma.userChallenge.create({
+      data: {
+        userId,
+        statementId: data.statementId,
+        statement: data.statement,
+      },
+    })
+    return res.json({ ok: true })
   } catch (error) {
     return res.status(400).json({ ok: false, message: error.message })
   }
