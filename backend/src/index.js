@@ -161,10 +161,23 @@ function buildOtpEmail(otp, ttlMinutes) {
   `
 
   const html = `
-    <div style="font-family:'Courier New',monospace;background:#050805;color:#e6f3e6;padding:24px;">
-      <div style="max-width:620px;margin:0 auto;">
-        ${header}
-        <div style="padding:22px 22px 18px;color:#dff0df;background:#0a110a;">
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="color-scheme" content="dark" />
+        <meta name="supported-color-schemes" content="dark" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </head>
+      <body style="margin:0;padding:0;background:#050805;color:#e6f3e6;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#050805" style="background:#050805;">
+          <tr>
+            <td align="center" style="padding:24px;">
+              <table role="presentation" width="620" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:620px;background:#050805;color:#e6f3e6;">
+                <tr>
+                  <td style="font-family:'Courier New',monospace;">
+                    ${header}
+                    <div style="padding:22px 22px 18px;color:#dff0df;background:#0a110a;">
           <div style="letter-spacing:0.35em;color:#7fe67f;font-size:12px;text-transform:uppercase;">CMD // Access Verification</div>
           <div style="margin:14px 0 6px;font-size:18px;">
             One-Time <span style="color:#9dff9d;">Password</span>
@@ -178,9 +191,15 @@ function buildOtpEmail(otp, ttlMinutes) {
           <div style="margin:18px 0 0;border-top:1px solid #1e2a1e;"></div>
           <div style="margin-top:14px;font-size:12px;opacity:0.7;">If you did not request this code, ignore this message.</div>
         <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD Decryptors</div>
-        </div>
-      </div>
-    </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
   `
   return { subject, text, html }
 }
@@ -197,18 +216,31 @@ function buildConfirmEmail() {
   ].join("\n")
 
   const html = `
-    <div style="font-family:'Courier New',monospace;background:#050805;color:#e6f3e6;padding:24px;">
-      <div style="max-width:620px;margin:0 auto;">
-        <div style="border:1px solid #1e2a1e;border-radius:12px;overflow:hidden;background:#0b120b;">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#0d160d;border-bottom:1px solid #1e2a1e;">
-            <div style="font-size:12px; letter-spacing:0.35em; color:#a5f3a5; text-transform:uppercase;">CMD</div>
-            <div style="display:flex;gap:6px;">
-              <span style="width:8px;height:8px;border-radius:999px;background:#1f2a1f;"></span>
-              <span style="width:8px;height:8px;border-radius:999px;background:#1f2a1f;"></span>
-              <span style="width:8px;height:8px;border-radius:999px;background:#1f2a1f;"></span>
-            </div>
-          </div>
-          <div style="padding:22px 22px 18px;color:#dff0df;background:#0a110a;">
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="color-scheme" content="dark" />
+        <meta name="supported-color-schemes" content="dark" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </head>
+      <body style="margin:0;padding:0;background:#050805;color:#e6f3e6;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#050805" style="background:#050805;">
+          <tr>
+            <td align="center" style="padding:24px;">
+              <table role="presentation" width="620" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:620px;background:#050805;color:#e6f3e6;">
+                <tr>
+                  <td style="font-family:'Courier New',monospace;">
+                    <div style="border:1px solid #1e2a1e;border-radius:12px;overflow:hidden;background:#0b120b;">
+                      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#0d160d;border-bottom:1px solid #1e2a1e;">
+                        <div style="font-size:12px; letter-spacing:0.35em; color:#a5f3a5; text-transform:uppercase;">CMD</div>
+                        <div style="display:flex;gap:6px;">
+                          <span style="width:8px;height:8px;border-radius:999px;background:#1f2a1f;"></span>
+                          <span style="width:8px;height:8px;border-radius:999px;background:#1f2a1f;"></span>
+                          <span style="width:8px;height:8px;border-radius:999px;background:#1f2a1f;"></span>
+                        </div>
+                      </div>
+                      <div style="padding:22px 22px 18px;color:#dff0df;background:#0a110a;">
             <div style="letter-spacing:0.35em;color:#7fe67f;font-size:12px;text-transform:uppercase;">CMD // Registration Confirmed</div>
             <div style="margin:14px 0 6px;font-size:18px;">
               Welcome to <span style="color:#9dff9d;">CMD</span>
@@ -218,11 +250,17 @@ function buildConfirmEmail() {
               <span style="color:#b7ffb7;"> log in</span> using your username and password.
             </div>
             <div style="margin:18px 0 0;border-top:1px solid #1e2a1e;"></div>
-            <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD Decryptors</div>
-          </div>
-        </div>
-      </div>
-    </div>
+                        <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD Decryptors</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
   `
   return { subject, text, html }
 }
