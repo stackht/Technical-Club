@@ -38,7 +38,7 @@ model UserChallenge {
   id         String   @id @default(cuid())
   userId     String
   statementId Int
-  statement Text
+  statement String
   createdAt  DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
