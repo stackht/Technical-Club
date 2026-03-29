@@ -23,17 +23,17 @@ export default function CharacterModel({
   rotateRef,
 }: Props) {
   const groupRef = useRef<THREE.Group>(null)
-  const { size } = useThree()
-  const isSmall = size.width < 768
+  const { viewport } = useThree()
   const hasInitialized = useRef(false)
-  const basePosition = useMemo(
-    () =>
-      centered
-        ? new THREE.Vector3(isSmall ? 1.2 : 2.8, isSmall ? -2.2 : -2.8, 0)
-        : new THREE.Vector3(3.2, -1.1, 0),
-    [centered, isSmall],
-  )
-  const modelScale = centered ? (isSmall ? 1.4 : 1.8) : 0.42
+  const basePosition = useMemo(() => {
+    if (!centered) return new THREE.Vector3(3.2, -1.1, 0)
+    const x = THREE.MathUtils.clamp(viewport.width * 0.22, 1.1, 2.6)
+    const y = THREE.MathUtils.clamp(-viewport.height * 0.32, -3.0, -1.8)
+    return new THREE.Vector3(x, y, 0)
+  }, [centered, viewport.width, viewport.height])
+  const modelScale = centered
+    ? THREE.MathUtils.clamp(viewport.width * 0.35, 1.2, 1.8)
+    : 0.42
   const floatOffset = useMemo(() => Math.random() * Math.PI * 2, [])
   const emissiveMaterials = useRef<THREE.MeshStandardMaterial[]>([])
   const emissiveBase = useRef(new Map<THREE.MeshStandardMaterial, number>())
@@ -125,7 +125,7 @@ export default function CharacterModel({
         hoveredRef.current = false
         setHovered(false)
       }}
-      position={centered ? [isSmall ? 1.2 : 2.8, isSmall ? -2.4 : -3.0, 0] : [3.2, -1.1, 0]}
+      position={[basePosition.x, basePosition.y - (centered ? 0.2 : 0), 0]}
     >
       <primitive object={scene} scale={modelScale} />
     </group>
