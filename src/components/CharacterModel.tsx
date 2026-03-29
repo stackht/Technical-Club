@@ -95,7 +95,7 @@ export default function CharacterModel({
       return
     }
 
-    groupRef.current.position.lerp(targetPosition, 0.08)
+    groupRef.current.position.copy(targetPosition)
 
     groupRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.2)
     const targetRotY = rotateRef?.current ?? 0
