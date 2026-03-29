@@ -18,8 +18,20 @@ const JWT_SECRET = process.env.JWT_SECRET || "change-me"
 app.set("trust proxy", 1)
 app.use(express.json())
 
+const normalizeOrigin = (value) => {
+  if (!value) return value
+  let origin = value.trim()
+  if ((origin.startsWith("\"") && origin.endsWith("\"")) || (origin.startsWith("'") && origin.endsWith("'"))) {
+    origin = origin.slice(1, -1)
+  }
+  if (origin.endsWith("/")) {
+    origin = origin.slice(0, -1)
+  }
+  return origin
+}
+
 const corsOrigins = process.env.CORS_ORIGIN
-  ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
+  ? process.env.CORS_ORIGIN.split(",").map((origin) => normalizeOrigin(origin))
   : ["*"]
 
 const corsOptions = {
