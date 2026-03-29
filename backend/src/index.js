@@ -15,12 +15,21 @@ const OTP_TTL_MINUTES = Number(process.env.OTP_TTL_MINUTES || 10)
 const OTP_COOLDOWN_SECONDS = Number(process.env.OTP_COOLDOWN_SECONDS || 60)
 const JWT_SECRET = process.env.JWT_SECRET || "change-me"
 
+app.set("trust proxy", 1)
 app.use(express.json())
-app.use(
-  cors({
-    origin: process.env.CORS_ORIGIN || "*",
-  }),
-)
+
+const corsOrigins = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(",").map((origin) => origin.trim())
+  : ["*"]
+
+const corsOptions = {
+  origin: corsOrigins,
+  methods: ["GET", "POST", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+}
+
+app.use(cors(corsOptions))
+app.options("*", cors(corsOptions))
 
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST,
