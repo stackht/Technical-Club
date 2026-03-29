@@ -79,7 +79,7 @@ const verifyOtpSchema = z.object({
 
 const registerSchema = z.object({
   email: z.string().email(),
-  username: z.string().min(3).max(24),
+  username: z.string().min(2).max(25),
   password: z.string().min(6).max(128),
 })
 
@@ -304,6 +304,9 @@ app.post("/auth/verify-otp", async (req, res) => {
 app.post("/auth/register", async (req, res) => {
   try {
     const data = registerSchema.parse(req.body)
+    const normalizedUsername = data.username.startsWith("$")
+      ? data.username
+      : `$${data.username}`
     const otpRecord = await prisma.otpToken.findFirst({
       where: {
         email: data.email,
@@ -322,7 +325,7 @@ app.post("/auth/register", async (req, res) => {
 
     const existing = await prisma.user.findFirst({
       where: {
-        OR: [{ email: data.email }, { username: data.username }],
+        OR: [{ email: data.email }, { username: normalizedUsername }],
       },
     })
     if (existing) {
@@ -333,7 +336,7 @@ app.post("/auth/register", async (req, res) => {
     await prisma.user.create({
       data: {
         email: data.email,
-        username: data.username,
+        username: normalizedUsername,
         passwordHash,
         phone: otpRecord.phone,
         year: otpRecord.year,

@@ -254,15 +254,20 @@ export default function FormSection() {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="username">Create Username</Label>
-                <Input
-                  id="username"
-                  placeholder="cmd_user"
-                  value={username}
-                  onChange={(event) =>
-                    dispatch(updateField({ field: "username", value: event.target.value }))
-                  }
-                  required
-                />
+                <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 text-sm text-white/80 shadow-inner shadow-black/60 focus-within:border-neonGreen/60 focus-within:ring-2 focus-within:ring-neonGreen/30">
+                  <span className="text-neonGreen/80">$</span>
+                  <input
+                    id="username"
+                    className="h-12 w-full bg-transparent outline-none"
+                    placeholder="cmd_user"
+                    value={username.replace(/^\$/, "")}
+                    onChange={(event) => {
+                      const raw = event.target.value.replace(/^\$/, "")
+                      dispatch(updateField({ field: "username", value: `$${raw}` }))
+                    }}
+                    required
+                  />
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password">Create Password</Label>
