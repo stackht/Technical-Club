@@ -29,7 +29,7 @@ export default function CharacterModel({
   const basePosition = useMemo(
     () =>
       centered
-        ? new THREE.Vector3(isSmall ? 1.9 : 2.8, isSmall ? -2.4 : -2.8, 0)
+        ? new THREE.Vector3(isSmall ? 1.9 : 2.8, isSmall ? -1.4 : -1.8, 0)
         : new THREE.Vector3(3.2, -1.1, 0),
     [centered, isSmall],
   )
