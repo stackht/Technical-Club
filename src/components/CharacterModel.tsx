@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
-import { PresentationControls, useCursor, useGLTF } from "@react-three/drei"
+import { useMemo, useRef, useState, useLayoutEffect } from "react"
+import { useCursor, useGLTF } from "@react-three/drei"
 import { DRACOLoader } from "three-stdlib"
 import { useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
@@ -23,21 +23,19 @@ export default function CharacterModel({
   rotateRef,
 }: Props) {
   const groupRef = useRef<THREE.Group>(null)
-  const { viewport } = useThree()
+  const { size } = useThree()
   const hasInitialized = useRef(false)
-  const basePosition = useMemo(() => {
-    if (!centered) return new THREE.Vector3(3.2, -1.1, 0)
-    const x = THREE.MathUtils.clamp(viewport.width * 0.22, 1.1, 2.6)
-    const y = THREE.MathUtils.clamp(-viewport.height * 0.32, -3.0, -1.8)
-    return new THREE.Vector3(x, y, 0)
-  }, [centered, viewport.width, viewport.height])
-  const modelScale = centered
-    ? THREE.MathUtils.clamp(viewport.width * 0.35, 1.2, 1.8)
-    : 0.42
-  const floatOffset = useMemo(() => Math.random() * Math.PI * 2, [])
+  const isSmall = size.width < 900
+  const basePosition = useMemo(
+    () =>
+      centered
+        ? new THREE.Vector3(isSmall ? 1.9 : 2.8, isSmall ? -2.4 : -2.8, 0)
+        : new THREE.Vector3(3.2, -1.1, 0),
+    [centered, isSmall],
+  )
+  const modelScale = centered ? (isSmall ? 1.5 : 1.8) : 0.42
   const emissiveMaterials = useRef<THREE.MeshStandardMaterial[]>([])
   const emissiveBase = useRef(new Map<THREE.MeshStandardMaterial, number>())
-  const { mouse } = useThree()
   const { scene } = useGLTF(
     "/models/scene.gltf",
     true,
@@ -54,7 +52,7 @@ export default function CharacterModel({
   const [hovered, setHovered] = useState(false)
   useCursor(hovered)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     emissiveMaterials.current = []
     emissiveBase.current.clear()
     scene.traverse((child) => {
@@ -70,7 +68,8 @@ export default function CharacterModel({
       }
     })
 
-    // Center the model so it sits at the origin
+    // Center the model so rotations happen around its own pivot.
+    scene.updateMatrixWorld(true)
     const box = new THREE.Box3().setFromObject(scene)
     const center = box.getCenter(new THREE.Vector3())
     scene.position.set(-center.x, -center.y, -center.z)
@@ -78,6 +77,7 @@ export default function CharacterModel({
 
   useFrame((state) => {
     if (!groupRef.current) return
+    const targetScale = hovered ? modelScale * 1.02 : modelScale
     const scrollShift = centered ? 0.2 : 0
     const parallaxX = 0
     const parallaxY = 0
@@ -89,7 +89,7 @@ export default function CharacterModel({
 
     if (!hasInitialized.current) {
       groupRef.current.position.copy(targetPosition)
-      groupRef.current.scale.set(1, 1, 1)
+      groupRef.current.scale.setScalar(modelScale)
       groupRef.current.rotation.set(0, rotateRef?.current ?? 0, 0)
       hasInitialized.current = true
       return
@@ -97,7 +97,10 @@ export default function CharacterModel({
 
     groupRef.current.position.copy(targetPosition)
 
-    groupRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.2)
+    groupRef.current.scale.lerp(
+      new THREE.Vector3(targetScale, targetScale, targetScale),
+      0.2,
+    )
     const targetRotY = rotateRef?.current ?? 0
     groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotY, 0.12)
     groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, 0, 0.2)
@@ -127,7 +130,7 @@ export default function CharacterModel({
       }}
       position={[basePosition.x, basePosition.y - (centered ? 0.2 : 0), 0]}
     >
-      <primitive object={scene} scale={modelScale} />
+      <primitive object={scene} />
     </group>
   )
 }

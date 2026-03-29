@@ -1,6 +1,7 @@
 "use client"
 
-import { useFrame } from "@react-three/fiber"
+import { useEffect } from "react"
+import { useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
 
 type Props = {
@@ -10,12 +11,17 @@ type Props = {
 }
 
 export default function CameraController({ scrollRef, hoveredRef, centered = false }: Props) {
-  useFrame(({ camera }) => {
-    const zoom = 6.6
-    const x = centered ? 0 : 1.2
-    const y = centered ? 0 : 0.1
-    camera.position.lerp(new THREE.Vector3(x, y, zoom), 0.08)
-    camera.lookAt(centered ? new THREE.Vector3(0, 0.1, 0) : new THREE.Vector3(1.8, 0.2, 0))
+  const { camera } = useThree()
+  const target = centered ? new THREE.Vector3(0, 0.1, 0) : new THREE.Vector3(1.8, 0.2, 0)
+  const position = centered ? new THREE.Vector3(0, 0, 6.6) : new THREE.Vector3(1.2, 0.1, 6.6)
+
+  useEffect(() => {
+    camera.position.copy(position)
+    camera.lookAt(target)
+  }, [camera, position, target])
+
+  useFrame(() => {
+    camera.lookAt(target)
   })
 
   return null
