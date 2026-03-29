@@ -5,7 +5,10 @@ export type FormState = {
   phone: string
   year: string
   branch: string
-  status: "idle" | "loading" | "success"
+  otp: string
+  username: string
+  password: string
+  status: "idle" | "loading" | "success" | "error"
 }
 
 const initialState: FormState = {
@@ -13,6 +16,9 @@ const initialState: FormState = {
   phone: "",
   year: "",
   branch: "",
+  otp: "",
+  username: "",
+  password: "",
   status: "idle",
 }
 
@@ -23,7 +29,7 @@ const formSlice = createSlice({
     updateField(
       state,
       action: PayloadAction<{
-        field: "email" | "phone" | "year" | "branch"
+        field: "email" | "phone" | "year" | "branch" | "otp" | "username" | "password"
         value: string
       }>,
     ) {
@@ -37,6 +43,9 @@ const formSlice = createSlice({
       state.phone = ""
       state.year = ""
       state.branch = ""
+      state.otp = ""
+      state.username = ""
+      state.password = ""
       state.status = "idle"
     },
   },

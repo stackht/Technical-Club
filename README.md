@@ -20,6 +20,29 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Backend (Railway + Postgres + SMTP)
+
+The frontend talks to a separate API service for OTP + account creation. The backend lives in `backend/`.
+
+### Backend setup
+1. Create a Postgres database in Railway and copy the `DATABASE_URL`.
+2. Set env vars for the backend (see `backend/.env.example`).
+3. From `backend/`, run:
+
+```bash
+npm install
+npm run prisma:generate
+npm run prisma:migrate
+npm run dev
+```
+
+### Frontend env
+Set the API base URL in the frontend:
+
+```bash
+NEXT_PUBLIC_API_BASE_URL=https://your-backend-url
+```
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
