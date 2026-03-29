@@ -12,7 +12,9 @@ import { Label } from "./ui/label"
 
 export default function FormSection() {
   const dispatch = useDispatch<AppDispatch>()
-  const { name, email, phone, status } = useSelector((state: RootState) => state.form)
+  const { email, phone, year, branch, status } = useSelector(
+    (state: RootState) => state.form,
+  )
   const buttonRef = useRef<HTMLButtonElement | null>(null)
 
   useEffect(() => {
@@ -66,18 +68,6 @@ export default function FormSection() {
         >
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input
-                id="name"
-                placeholder="Neo Coder"
-                value={name}
-                onChange={(event) =>
-                  dispatch(updateField({ field: "name", value: event.target.value }))
-                }
-                required
-              />
-            </div>
-            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -90,19 +80,62 @@ export default function FormSection() {
                 required
               />
             </div>
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number</Label>
+              <Input
+                id="phone"
+                placeholder="+91 90000 00000"
+                value={phone}
+                onChange={(event) =>
+                  dispatch(updateField({ field: "phone", value: event.target.value }))
+                }
+                required
+              />
+            </div>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone">Phone</Label>
-            <Input
-              id="phone"
-              placeholder="+91 90000 00000"
-              value={phone}
-              onChange={(event) =>
-                dispatch(updateField({ field: "phone", value: event.target.value }))
-              }
-              required
-            />
+          <div className="grid gap-6 md:grid-cols-2">
+            <div className="space-y-2">
+              <Label htmlFor="year">Year</Label>
+              <select
+                id="year"
+                className="h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white/80 shadow-inner shadow-black/60 outline-none transition focus:border-neonGreen/60 focus:ring-2 focus:ring-neonGreen/30"
+                value={year}
+                onChange={(event) =>
+                  dispatch(updateField({ field: "year", value: event.target.value }))
+                }
+                required
+              >
+                <option value="" disabled>
+                  Select year
+                </option>
+                <option value="FE">FE</option>
+                <option value="SE">SE</option>
+                <option value="TE">TE</option>
+                <option value="BE">BE</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="branch">Branch</Label>
+              <select
+                id="branch"
+                className="h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white/80 shadow-inner shadow-black/60 outline-none transition focus:border-neonGreen/60 focus:ring-2 focus:ring-neonGreen/30"
+                value={branch}
+                onChange={(event) =>
+                  dispatch(updateField({ field: "branch", value: event.target.value }))
+                }
+                required
+              >
+                <option value="" disabled>
+                  Select branch
+                </option>
+                <option value="AI&DS">AI&DS</option>
+                <option value="AIML">AIML</option>
+                <option value="IOT">IOT</option>
+                <option value="COMP">COMP</option>
+                <option value="MECH">MECH</option>
+              </select>
+            </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-4">

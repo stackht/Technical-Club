@@ -1,16 +1,18 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
 export type FormState = {
-  name: string
   email: string
   phone: string
+  year: string
+  branch: string
   status: "idle" | "loading" | "success"
 }
 
 const initialState: FormState = {
-  name: "",
   email: "",
   phone: "",
+  year: "",
+  branch: "",
   status: "idle",
 }
 
@@ -20,7 +22,10 @@ const formSlice = createSlice({
   reducers: {
     updateField(
       state,
-      action: PayloadAction<{ field: "name" | "email" | "phone"; value: string }>,
+      action: PayloadAction<{
+        field: "email" | "phone" | "year" | "branch"
+        value: string
+      }>,
     ) {
       state[action.payload.field] = action.payload.value
     },
@@ -28,9 +33,10 @@ const formSlice = createSlice({
       state.status = action.payload
     },
     resetForm(state) {
-      state.name = ""
       state.email = ""
       state.phone = ""
+      state.year = ""
+      state.branch = ""
       state.status = "idle"
     },
   },

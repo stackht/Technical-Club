@@ -59,6 +59,10 @@ export default function Home() {
         : 0
 
       sections.forEach((section) => {
+        if (section.id === "participate") {
+          section.style.opacity = "1"
+          return
+        }
         const rect = section.getBoundingClientRect()
         const sectionCenter = rect.top + rect.height / 2
         if (rect.top <= headerBottom) {
