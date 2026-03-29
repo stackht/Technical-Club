@@ -56,6 +56,15 @@ const transporter = nodemailer.createTransport({
   socketTimeout: 15_000,
 })
 
+const parseFrom = () => {
+  const raw = process.env.SMTP_FROM || process.env.SMTP_USER || ""
+  const match = raw.match(/^\s*([^<]+?)\s*<([^>]+)>\s*$/)
+  if (match) {
+    return { name: match[1].trim(), email: match[2].trim() }
+  }
+  return { name: "Code Medium", email: raw.trim() }
+}
+
 const requestOtpSchema = z.object({
   email: z.string().email(),
   phone: z.string().min(6),
@@ -88,6 +97,28 @@ function nowPlusMinutes(minutes) {
 }
 
 async function sendMail({ to, subject, text }) {
+  if (process.env.BREVO_API_KEY) {
+    const from = parseFrom()
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "api-key": process.env.BREVO_API_KEY,
+      },
+      body: JSON.stringify({
+        sender: { name: from.name, email: from.email },
+        to: [{ email: to }],
+        subject,
+        textContent: text,
+      }),
+    })
+    if (!response.ok) {
+      const body = await response.text()
+      throw new Error(`Brevo API error: ${response.status} ${body}`)
+    }
+    return
+  }
+
   if (!process.env.SMTP_HOST) {
     throw new Error("SMTP not configured")
   }
