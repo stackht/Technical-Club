@@ -96,7 +96,7 @@ function nowPlusMinutes(minutes) {
   return new Date(Date.now() + minutes * 60 * 1000)
 }
 
-async function sendMail({ to, subject, text }) {
+async function sendMail({ to, subject, text, html }) {
   if (process.env.BREVO_API_KEY) {
     const from = parseFrom()
     const response = await fetch("https://api.brevo.com/v3/smtp/email", {
@@ -110,6 +110,7 @@ async function sendMail({ to, subject, text }) {
         to: [{ email: to }],
         subject,
         textContent: text,
+        htmlContent: html,
       }),
     })
     if (!response.ok) {
@@ -127,11 +128,67 @@ async function sendMail({ to, subject, text }) {
     to,
     subject,
     text,
+    html,
   })
   const timeout = new Promise((_, reject) =>
     setTimeout(() => reject(new Error("SMTP timeout")), 15_000),
   )
   await Promise.race([send, timeout])
+}
+
+function buildOtpEmail(otp, ttlMinutes) {
+  const subject = "CMD Access Code — One-Time Password"
+  const text = [
+    "CMD // ACCESS VERIFICATION",
+    "",
+    `One-Time Password: ${otp}`,
+    `Valid for: ${ttlMinutes} minutes`,
+    "",
+    "If you did not request this code, ignore this message.",
+    "— CMD System",
+  ].join("\n")
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; background:#0a0f0a; color:#e6f3e6; padding:24px;">
+      <div style="max-width:560px;margin:0 auto;border:1px solid #1a2a1a;border-radius:12px;padding:24px;background:#0c140c;">
+        <div style="letter-spacing:0.35em;color:#8fe88f;font-size:12px;text-transform:uppercase;">CMD // Access Verification</div>
+        <h2 style="margin:16px 0 6px;font-weight:600;">One-Time Password</h2>
+        <div style="font-size:28px;letter-spacing:0.2em;color:#b7ffb7;margin:14px 0;">${otp}</div>
+        <div style="opacity:0.8;">Valid for <strong>${ttlMinutes} minutes</strong>.</div>
+        <hr style="border:none;border-top:1px solid #1a2a1a;margin:18px 0;" />
+        <div style="font-size:12px;opacity:0.7;">If you did not request this code, ignore this message.</div>
+        <div style="margin-top:14px;font-size:12px;opacity:0.7;">— CMD System</div>
+      </div>
+    </div>
+  `
+  return { subject, text, html }
+}
+
+function buildConfirmEmail() {
+  const subject = "CMD Registration Confirmed"
+  const text = [
+    "CMD // REGISTRATION CONFIRMED",
+    "",
+    "Your registration is complete.",
+    "Welcome to CMD. You can now log in with your username and password.",
+    "",
+    "— CMD System",
+  ].join("\n")
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; background:#0a0f0a; color:#e6f3e6; padding:24px;">
+      <div style="max-width:560px;margin:0 auto;border:1px solid #1a2a1a;border-radius:12px;padding:24px;background:#0c140c;">
+        <div style="letter-spacing:0.35em;color:#8fe88f;font-size:12px;text-transform:uppercase;">CMD // Registration Confirmed</div>
+        <h2 style="margin:16px 0 6px;font-weight:600;">Welcome to CMD</h2>
+        <div style="opacity:0.85;line-height:1.6;">
+          Your registration is complete. You can now log in using your username and password.
+        </div>
+        <hr style="border:none;border-top:1px solid #1a2a1a;margin:18px 0;" />
+        <div style="margin-top:14px;font-size:12px;opacity:0.7;">— CMD System</div>
+      </div>
+    </div>
+  `
+  return { subject, text, html }
 }
 
 app.get("/health", (req, res) => {
@@ -167,10 +224,12 @@ app.post("/auth/request-otp", async (req, res) => {
       },
     })
 
+    const otpEmail = buildOtpEmail(otp, OTP_TTL_MINUTES)
     await sendMail({
       to: data.email,
-      subject: "Your Code Medium OTP",
-      text: `Your OTP is ${otp}. It expires in ${OTP_TTL_MINUTES} minutes.`,
+      subject: otpEmail.subject,
+      text: otpEmail.text,
+      html: otpEmail.html,
     })
 
     return res.json({ ok: true })
@@ -258,10 +317,12 @@ app.post("/auth/register", async (req, res) => {
       data: { consumedAt: new Date() },
     })
 
+    const confirmEmail = buildConfirmEmail()
     await sendMail({
       to: data.email,
-      subject: "Registration Confirmed",
-      text: "Your registration for Code Medium is confirmed. Welcome aboard!",
+      subject: confirmEmail.subject,
+      text: confirmEmail.text,
+      html: confirmEmail.html,
     })
 
     return res.json({ ok: true })
