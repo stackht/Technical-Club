@@ -3,6 +3,7 @@ import { Cinzel, Orbitron, Space_Grotesk } from "next/font/google"
 import "./globals.css"
 import ReduxProvider from "../components/providers/ReduxProvider"
 import PreloadModels from "../components/PreloadModels"
+import ConsoleSilencer from "../components/ConsoleSilencer"
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -39,6 +40,7 @@ export default function RootLayout({
     >
       <body className="min-h-full bg-ink text-white">
         <ReduxProvider>
+          <ConsoleSilencer />
           <PreloadModels />
           {children}
         </ReduxProvider>
