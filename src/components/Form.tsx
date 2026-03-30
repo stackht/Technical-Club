@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import { useDispatch, useSelector } from "react-redux"
 import { motion } from "framer-motion"
 import gsap from "gsap"
@@ -20,30 +21,8 @@ export default function FormSection() {
     "details",
   )
   const [message, setMessage] = useState("")
-  const [showChallenges, setShowChallenges] = useState(false)
-  const [selectedChallenge, setSelectedChallenge] = useState(1)
+  const router = useRouter()
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
-  const challenges = [
-    "Unused Mobile Data — Design a system where users can save, transfer, or monetize unused data efficiently.",
-    "Mumbai Local Ticket Verification — Design a frictionless ticket verification system that reduces time while preventing fraud.",
-    "Fast Language Learning — Design a solution that drastically reduces learning time while maximizing practical fluency.",
-    "Bank SMS Charges Problem — Reduce or replace SMS alerts while maintaining security and regulatory compliance.",
-    "Future of Developers vs AI — How can a human developer stay relevant or outperform AI?",
-    "AI for College Admin — Reduce workload for attendance, assignments, grading, communication, and administration.",
-    "Smart Wearable for Color Vision Deficiency — Detect and communicate colors in real-time with fast, accurate feedback.",
-    "OTP Fraud Prevention — Prevent or reduce OTP sharing fraud with a simple, secure user experience.",
-  ]
-
-  useEffect(() => {
-    if (showChallenges) {
-      document.body.style.overflow = "hidden"
-      document.body.dataset.modalOpen = "true"
-      return () => {
-        document.body.style.overflow = ""
-        delete document.body.dataset.modalOpen
-      }
-    }
-  }, [showChallenges])
 
   useEffect(() => {
     if (status === "success" && buttonRef.current) {
@@ -141,7 +120,7 @@ export default function FormSection() {
       dispatch(setStatus("success"))
       setStep("done")
       setMessage("Registration complete. You are now logged in.")
-      setShowChallenges(true)
+      router.push("/challenges")
       dispatch(resetForm())
     } catch (error: any) {
       dispatch(setStatus("error"))
@@ -340,56 +319,6 @@ export default function FormSection() {
         </motion.form>
       </div>
 
-      {showChallenges && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-start bg-black/80 px-6">
-          <div className="w-full max-w-4xl rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
-            <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3 text-xs uppercase tracking-[0.35em] text-white/70">
-              <span>Cmd Problem Shell</span>
-              <span className="text-neonGreen/80">CMD</span>
-            </div>
-            <div className="space-y-4 text-sm text-white/80 max-h-[70vh] overflow-y-auto pr-2">
-              <div className="text-neonGreen/80">Problem Statements</div>
-              <div className="grid gap-4 md:grid-cols-2">
-                {challenges.map((item, index) => (
-                  <div
-                    key={item}
-                    className="rounded-lg border border-white/10 bg-black/60 p-4 shadow-inner shadow-black/60"
-                  >
-                    <div className="text-xs uppercase tracking-[0.2em] text-neonGreen/70">
-                      Problem {index + 1}
-                    </div>
-                    <div className="mt-2 text-sm text-white/80">{item}</div>
-                    <div className="mt-4 flex justify-end">
-                      <Button
-                        className="min-w-[140px]"
-                        onClick={async () => {
-                          setSelectedChallenge(index + 1)
-                          const token = localStorage.getItem("cmd_token")
-                          if (!token) return
-                          await fetch(`${apiBase}/challenges/submit`, {
-                            method: "POST",
-                            headers: {
-                              "Content-Type": "application/json",
-                              Authorization: `Bearer ${token}`,
-                            },
-                            body: JSON.stringify({
-                              statementId: index + 1,
-                              statement: item,
-                            }),
-                          })
-                          setShowChallenges(false)
-                        }}
-                      >
-                        Seal
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   )
 }
