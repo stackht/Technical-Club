@@ -205,7 +205,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
             style={{ opacity: heroOpacity }}
           >
             <div className="terminal-bg-text w-full text-left font-orbitron font-bold uppercase leading-none text-[#d7ddd7]/28 drop-shadow-[0_0_50px_rgba(180,190,180,0.2)]">
-                <span className="inline-block origin-left scale-x-[0.6] scale-y-[0.75] tracking-[0.16em]">
+                <span className="inline-block origin-left scale-x-[0.8] scale-y-[0.75] tracking-[0.16em]">
                   TECHNICAL
                 </span>{" "}
                 <span className="whitespace-nowrap">CLUB</span>
