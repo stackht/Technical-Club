@@ -83,7 +83,7 @@ export default function CharacterModel({
     groupRef.current.rotation.set(0, rotateRef?.current ?? 0, 0)
   }, [basePosition, centered, modelScale, rotateRef])
 
-  useFrame((state) => {
+  useFrame(() => {
     if (!groupRef.current) return
     const targetScale = hovered ? modelScale * 1.02 : modelScale
     const scrollShift = centered ? 0.2 : 0
@@ -95,20 +95,8 @@ export default function CharacterModel({
       basePosition.z,
     )
 
-    if (!hasInitialized.current) {
-      groupRef.current.position.copy(targetPosition)
-      groupRef.current.scale.setScalar(modelScale)
-      groupRef.current.rotation.set(0, rotateRef?.current ?? 0, 0)
-      hasInitialized.current = true
-      return
-    }
-
     groupRef.current.position.copy(targetPosition)
-
-    groupRef.current.scale.lerp(
-      new THREE.Vector3(targetScale, targetScale, targetScale),
-      0.2,
-    )
+    groupRef.current.scale.setScalar(targetScale)
     const targetRotY = rotateRef?.current ?? 0
     groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotY, 0.12)
     groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, 0, 0.2)

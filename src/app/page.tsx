@@ -42,6 +42,19 @@ export default function Home() {
   }, [pathname])
 
   useEffect(() => {
+    if (pathname !== "/") return
+    const scroller = scrollRef.current
+    if (!scroller) return
+    const topLock = () => {
+      scroller.scrollTop = 0
+      rotateRef.current = 0
+    }
+    topLock()
+    const raf = requestAnimationFrame(topLock)
+    return () => cancelAnimationFrame(raf)
+  }, [pathname])
+
+  useEffect(() => {
     const scroller = scrollRef.current
     if (!scroller) return
     const handleWheel = (event: WheelEvent) => {
