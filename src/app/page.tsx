@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
 import CursorGlow from "../components/CursorGlow"
 import HeroCentered from "../components/HeroCentered"
@@ -17,6 +18,7 @@ export default function Home() {
   const scrollRef = useRef<HTMLDivElement | null>(null)
   const [hideHeroText, setHideHeroText] = useState(false)
   const rotateRef = useRef(0)
+  const pathname = usePathname()
 
   useEffect(() => {
     const el = scrollRef.current
@@ -29,6 +31,15 @@ export default function Home() {
     el.addEventListener("scroll", handleScroll)
     return () => el.removeEventListener("scroll", handleScroll)
   }, [])
+
+  useEffect(() => {
+    if (pathname !== "/") return
+    const scroller = scrollRef.current
+    if (!scroller) return
+    scroller.scrollTo({ top: 0 })
+    rotateRef.current = 0
+    setHideHeroText(false)
+  }, [pathname])
 
   useEffect(() => {
     const scroller = scrollRef.current
