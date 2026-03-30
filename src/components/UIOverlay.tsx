@@ -19,6 +19,7 @@ type Props = {
 
 export default function UIOverlay({ variant, hideHeroText = false }: Props) {
   const router = useRouter()
+  const [keySeq, setKeySeq] = useState("")
   const [typed, setTyped] = useState("")
   const [activeId, setActiveId] = useState("hero-centered")
   const [heroOpacity, setHeroOpacity] = useState(1)
@@ -50,6 +51,29 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
     }, 120)
     return () => clearInterval(interval)
   }, [])
+
+  useEffect(() => {
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.shiftKey && event.key.toLowerCase() === "c") {
+        setKeySeq("c")
+        return
+      }
+      if (keySeq === "c" && event.key.toLowerCase() === "m") {
+        setKeySeq("cm")
+        return
+      }
+      if (keySeq === "cm" && event.key.toLowerCase() === "d") {
+        setKeySeq("")
+        router.push("/admin/login")
+        return
+      }
+      if (event.key.length === 1) {
+        setKeySeq("")
+      }
+    }
+    window.addEventListener("keydown", handleKey)
+    return () => window.removeEventListener("keydown", handleKey)
+  }, [keySeq, router])
 
   useEffect(() => {
     const overlay = overlayRef.current
@@ -136,13 +160,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
     <>
       {variant === "centered" && (
         <div className="terminal-header terminal-header-layer pointer-events-auto fixed left-0 right-0 top-6 mx-auto flex w-full max-w-6xl items-center justify-between text-xs uppercase tracking-[0.35em] text-white/60">
-          <button
-            type="button"
-            className="terminal-titlebar cursor-pointer"
-            onClick={() => router.push("/admin/login")}
-          >
-            Cmd
-          </button>
+          <div className="terminal-titlebar">Cmd</div>
           <div className="terminal-tabs flex items-center gap-4">
             {[
               { label: "Home", id: "hero-centered" },
