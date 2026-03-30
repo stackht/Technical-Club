@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useRef } from "react"
+import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
 import { Canvas } from "@react-three/fiber"
 import { Html, useProgress } from "@react-three/drei"
@@ -41,6 +42,7 @@ type Props = {
 export default function HeroCentered({ hideHeroText = false, rotateRef }: Props) {
   const scrollRef = useRef(0)
   const hoveredRef = useRef(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const scroller = document.querySelector(".scroll-stage") as HTMLElement | null
@@ -57,6 +59,10 @@ export default function HeroCentered({ hideHeroText = false, rotateRef }: Props)
     })
     return () => trigger.kill()
   }, [])
+
+  useEffect(() => {
+    scrollRef.current = 0
+  }, [pathname])
 
   return (
     <section id="hero-centered" className="relative min-h-screen overflow-hidden bg-[#050805]">
@@ -75,6 +81,7 @@ export default function HeroCentered({ hideHeroText = false, rotateRef }: Props)
         className="absolute inset-0 z-30"
       >
         <Canvas
+          key={pathname}
           camera={{ position: [0, 0.2, 7], fov: 42 }}
           dpr={1}
           gl={{ antialias: false, powerPreference: "high-performance" }}
