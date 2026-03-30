@@ -1,6 +1,6 @@
 "use client"
 
-import { useMemo, useRef, useState, useLayoutEffect } from "react"
+import { useMemo, useRef, useState, useLayoutEffect, useEffect } from "react"
 import { useCursor, useGLTF } from "@react-three/drei"
 import { DRACOLoader } from "three-stdlib"
 import { useFrame, useThree } from "@react-three/fiber"
@@ -74,6 +74,14 @@ export default function CharacterModel({
     const center = box.getCenter(new THREE.Vector3())
     scene.position.set(-center.x, -center.y, -center.z)
   }, [scene])
+
+  useEffect(() => {
+    if (!groupRef.current) return
+    hasInitialized.current = false
+    groupRef.current.position.set(basePosition.x, basePosition.y - (centered ? 0.2 : 0), 0)
+    groupRef.current.scale.setScalar(modelScale)
+    groupRef.current.rotation.set(0, rotateRef?.current ?? 0, 0)
+  }, [basePosition, centered, modelScale, rotateRef])
 
   useFrame((state) => {
     if (!groupRef.current) return
