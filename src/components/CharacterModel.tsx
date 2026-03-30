@@ -69,10 +69,13 @@ export default function CharacterModel({
     })
 
     // Center the model so rotations happen around its own pivot.
-    scene.updateMatrixWorld(true)
-    const box = new THREE.Box3().setFromObject(scene)
-    const center = box.getCenter(new THREE.Vector3())
-    scene.position.set(-center.x, -center.y, -center.z)
+    if (!scene.userData.__centered) {
+      scene.updateMatrixWorld(true)
+      const box = new THREE.Box3().setFromObject(scene)
+      const center = box.getCenter(new THREE.Vector3())
+      scene.position.set(-center.x, -center.y, -center.z)
+      scene.userData.__centered = true
+    }
   }, [scene])
 
   useEffect(() => {
