@@ -116,6 +116,25 @@ export default function Home() {
     }
   }, [])
 
+  useEffect(() => {
+    const scroller = scrollRef.current
+    if (!scroller) return
+    let timeout: ReturnType<typeof setTimeout> | null = null
+    const handleScroll = () => {
+      document.body.classList.add("is-scrolling")
+      if (timeout) clearTimeout(timeout)
+      timeout = setTimeout(() => {
+        document.body.classList.remove("is-scrolling")
+      }, 140)
+    }
+    scroller.addEventListener("scroll", handleScroll, { passive: true })
+    return () => {
+      if (timeout) clearTimeout(timeout)
+      scroller.removeEventListener("scroll", handleScroll)
+      document.body.classList.remove("is-scrolling")
+    }
+  }, [])
+
   return (
     <motion.main
       initial={{ opacity: 0 }}

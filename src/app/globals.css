@@ -47,6 +47,21 @@ body[data-modal-open="true"] .scroll-stage {
   overflow: hidden;
 }
 
+body.is-scrolling .glitch::before,
+body.is-scrolling .glitch::after,
+body.is-scrolling .flicker-text,
+body.is-scrolling .flicker-cursor,
+body.is-scrolling .hacker-flicker,
+body.is-scrolling .btn::after,
+body.is-scrolling .glass-panel::after,
+body.is-scrolling .terminal-tabs::after {
+  animation-play-state: paused !important;
+}
+
+body.is-scrolling .cursor-glow {
+  opacity: 0.2;
+}
+
 body.text-white {
   color: var(--foreground);
 }
