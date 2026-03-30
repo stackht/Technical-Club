@@ -87,6 +87,10 @@ const loginSchema = z.object({
   identifier: z.string().min(3),
   password: z.string().min(6).max(128),
 })
+const adminLoginSchema = z.object({
+  username: z.string().min(3),
+  password: z.string().min(6).max(128),
+})
 
 const challengeSchema = z.object({
   statementId: z.number().int().min(1).max(8),
@@ -452,6 +456,26 @@ app.post("/auth/login", async (req, res) => {
       token,
       user: { id: user.id, email: user.email, username: user.username },
     })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.post("/admin/login", async (req, res) => {
+  try {
+    const data = adminLoginSchema.parse(req.body)
+    const adminUser = process.env.ADMIN_USERNAME
+    const adminPass = process.env.ADMIN_PASSWORD
+    if (!adminUser || !adminPass) {
+      return res.status(400).json({ ok: false, message: "Admin not configured." })
+    }
+    if (data.username !== adminUser || data.password !== adminPass) {
+      return res.status(401).json({ ok: false, message: "Invalid credentials." })
+    }
+    const token = jwt.sign({ sub: "admin", role: "admin" }, JWT_SECRET, {
+      expiresIn: "1d",
+    })
+    return res.json({ ok: true, token })
   } catch (error) {
     return res.status(400).json({ ok: false, message: error.message })
   }
