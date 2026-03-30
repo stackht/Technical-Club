@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef } from "react"
+import { memo, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
@@ -15,7 +15,7 @@ const goals = [
   { label: "Build community", value: 95 },
 ]
 
-export default function OurGoals() {
+function OurGoals() {
   const sectionRef = useRef<HTMLElement | null>(null)
   const barsRef = useRef<(HTMLDivElement | null)[]>([])
   useGsapReveal(sectionRef)
@@ -83,3 +83,5 @@ export default function OurGoals() {
     </section>
   )
 }
+
+export default memo(OurGoals)

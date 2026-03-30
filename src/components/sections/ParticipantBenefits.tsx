@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { memo, useRef } from "react"
 import { animated, to, useSpring } from "@react-spring/web"
 import { motion } from "framer-motion"
 import { useGsapReveal } from "../hooks/useGsapReveal"
@@ -51,7 +51,7 @@ function HoloCard({ text }: { text: string }) {
   )
 }
 
-export default function ParticipantBenefits() {
+function ParticipantBenefits() {
   const sectionRef = useRef<HTMLElement | null>(null)
   useGsapReveal(sectionRef)
 
@@ -81,3 +81,5 @@ export default function ParticipantBenefits() {
     </section>
   )
 }
+
+export default memo(ParticipantBenefits)

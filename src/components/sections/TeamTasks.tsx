@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { memo, useRef } from "react"
 import { motion } from "framer-motion"
 import { useGsapReveal } from "../hooks/useGsapReveal"
 
@@ -13,7 +13,7 @@ const faces = [
   { label: "Operations", transform: "rotateX(-90deg) translateZ(90px)" },
 ]
 
-export default function TeamTasks() {
+function TeamTasks() {
   const sectionRef = useRef<HTMLElement | null>(null)
   useGsapReveal(sectionRef)
 
@@ -57,3 +57,5 @@ export default function TeamTasks() {
     </section>
   )
 }
+
+export default memo(TeamTasks)

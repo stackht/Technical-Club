@@ -1,10 +1,10 @@
 "use client"
 
-import { useRef } from "react"
+import { memo, useRef } from "react"
 import { motion } from "framer-motion"
 import { useGsapReveal } from "../hooks/useGsapReveal"
 
-export default function TraditionalVsUs() {
+function TraditionalVsUs() {
   const sectionRef = useRef<HTMLElement | null>(null)
   useGsapReveal(sectionRef)
 
@@ -61,3 +61,5 @@ export default function TraditionalVsUs() {
     </section>
   )
 }
+
+export default memo(TraditionalVsUs)

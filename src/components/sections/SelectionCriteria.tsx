@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { memo, useRef } from "react"
 import { motion } from "framer-motion"
 import { useGsapReveal } from "../hooks/useGsapReveal"
 
@@ -11,7 +11,7 @@ const steps = [
   "Final Selection",
 ]
 
-export default function SelectionCriteria() {
+function SelectionCriteria() {
   const sectionRef = useRef<HTMLElement | null>(null)
   useGsapReveal(sectionRef)
 
@@ -53,3 +53,5 @@ export default function SelectionCriteria() {
     </section>
   )
 }
+
+export default memo(SelectionCriteria)

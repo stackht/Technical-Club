@@ -394,6 +394,7 @@ textarea {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  will-change: transform;
 }
 
 .scroll-stage {
@@ -419,6 +420,7 @@ textarea {
 .terminal-section {
   opacity: 1;
   transition: opacity 0.35s ease;
+  will-change: opacity;
 }
 .hero-grid {
   position: absolute;

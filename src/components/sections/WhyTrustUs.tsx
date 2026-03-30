@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef } from "react"
+import { memo, useRef } from "react"
 import { motion } from "framer-motion"
 import { useGsapReveal } from "../hooks/useGsapReveal"
 
@@ -10,7 +10,7 @@ const testimonials = [
   "A community that learns fast and builds faster.",
 ]
 
-export default function WhyTrustUs() {
+function WhyTrustUs() {
   const sectionRef = useRef<HTMLElement | null>(null)
   useGsapReveal(sectionRef)
 
@@ -48,3 +48,5 @@ export default function WhyTrustUs() {
     </section>
   )
 }
+
+export default memo(WhyTrustUs)
