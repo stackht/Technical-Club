@@ -486,6 +486,30 @@ app.post("/auth/login", async (req, res) => {
   }
 })
 
+app.get("/auth/me", authRequired, async (req, res) => {
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: req.userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        username: true,
+        phone: true,
+        year: true,
+        branch: true,
+        createdAt: true,
+      },
+    })
+    if (!user) {
+      return res.status(404).json({ ok: false, message: "User not found." })
+    }
+    return res.json({ ok: true, user })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
 app.post("/admin/login", async (req, res) => {
   try {
     const data = adminLoginSchema.parse(req.body)

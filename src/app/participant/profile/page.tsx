@@ -7,6 +7,15 @@ import { Button } from "../../../components/ui/button"
 export default function ParticipantProfilePage() {
   const router = useRouter()
   const [ready, setReady] = useState(false)
+  const [profile, setProfile] = useState<{
+    name: string
+    email: string
+    username: string
+    phone: string
+    year: string
+    branch: string
+  } | null>(null)
+  const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
   useEffect(() => {
     const token = localStorage.getItem("cmd_token")
@@ -16,6 +25,22 @@ export default function ParticipantProfilePage() {
     }
     setReady(true)
   }, [router])
+
+  useEffect(() => {
+    if (!ready) return
+    const token = localStorage.getItem("cmd_token")
+    if (!token) return
+    const load = async () => {
+      const response = await fetch(`${apiBase}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await response.json()
+      if (response.ok) {
+        setProfile(data.user)
+      }
+    }
+    load()
+  }, [apiBase, ready])
 
   if (!ready) return null
 
@@ -37,8 +62,31 @@ export default function ParticipantProfilePage() {
           <div className="text-xs uppercase tracking-[0.35em] text-white/70">
             Participant Profile
           </div>
-          <div className="mt-4 text-sm text-white/80">
-            Profile console will display your registered details here.
+          <div className="mt-6 grid gap-4 text-sm text-white/80">
+            <div>
+              <span className="text-neonGreen/70">Name:</span>{" "}
+              {profile?.name || "—"}
+            </div>
+            <div>
+              <span className="text-neonGreen/70">Email:</span>{" "}
+              {profile?.email || "—"}
+            </div>
+            <div>
+              <span className="text-neonGreen/70">Username:</span>{" "}
+              {profile?.username || "—"}
+            </div>
+            <div>
+              <span className="text-neonGreen/70">Phone:</span>{" "}
+              {profile?.phone || "—"}
+            </div>
+            <div>
+              <span className="text-neonGreen/70">Year:</span>{" "}
+              {profile?.year || "—"}
+            </div>
+            <div>
+              <span className="text-neonGreen/70">Branch:</span>{" "}
+              {profile?.branch || "—"}
+            </div>
           </div>
         </div>
       </div>
