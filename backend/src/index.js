@@ -111,6 +111,10 @@ const reviewSchema = z.object({
   reviewStatus: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
 })
 
+const announcementSchema = z.object({
+  content: z.string().min(5).max(4000),
+})
+
 function authRequired(req, res, next) {
   const header = req.headers.authorization || ""
   const token = header.startsWith("Bearer ") ? header.slice(7) : null
@@ -516,6 +520,17 @@ app.get("/auth/me", authRequired, async (req, res) => {
   }
 })
 
+app.get("/announcement", async (req, res) => {
+  try {
+    const announcement = await prisma.announcement.findFirst({
+      orderBy: { updatedAt: "desc" },
+    })
+    return res.json({ ok: true, announcement: announcement?.content || "" })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
 app.post("/admin/login", async (req, res) => {
   try {
     const data = adminLoginSchema.parse(req.body)
@@ -545,6 +560,10 @@ app.get("/admin/participants", adminRequired, async (req, res) => {
           orderBy: { createdAt: "desc" },
           take: 1,
         },
+        uploads: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
       },
     })
     const payload = users.map((user) => ({
@@ -557,6 +576,7 @@ app.get("/admin/participants", adminRequired, async (req, res) => {
       pScore: user.pScore,
       dScore: user.dScore,
       reviewStatus: user.reviewStatus,
+      hasUpload: !!user.uploads?.[0],
     }))
     return res.json({ ok: true, participants: payload })
   } catch (error) {
@@ -578,6 +598,49 @@ app.post("/admin/participants/:id/review", adminRequired, async (req, res) => {
       data: update,
     })
     return res.json({ ok: true, user: { id: user.id, reviewStatus: user.reviewStatus } })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.get("/admin/participants/:id/upload", adminRequired, async (req, res) => {
+  try {
+    const userId = req.params.id
+    const upload = await prisma.challengeUpload.findFirst({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+    })
+    if (!upload) {
+      return res.status(404).json({ ok: false, message: "No upload found." })
+    }
+    res.setHeader("Content-Type", upload.mimeType || "application/octet-stream")
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${upload.filename.replace(/"/g, "")}"`,
+    )
+    return res.send(Buffer.from(upload.data))
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.post("/admin/announcement", adminRequired, async (req, res) => {
+  try {
+    const data = announcementSchema.parse(req.body)
+    const existing = await prisma.announcement.findFirst({
+      orderBy: { updatedAt: "desc" },
+    })
+    if (existing) {
+      const updated = await prisma.announcement.update({
+        where: { id: existing.id },
+        data: { content: data.content },
+      })
+      return res.json({ ok: true, announcement: updated.content })
+    }
+    const created = await prisma.announcement.create({
+      data: { content: data.content },
+    })
+    return res.json({ ok: true, announcement: created.content })
   } catch (error) {
     return res.status(400).json({ ok: false, message: error.message })
   }

@@ -26,6 +26,7 @@ export default function ChallengesPage() {
     statementId: number
     statement: string
   } | null>(null)
+  const [announcement, setAnnouncement] = useState("")
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
   useEffect(() => {
@@ -49,6 +50,19 @@ export default function ChallengesPage() {
       }
     }
     load()
+  }, [apiBase])
+
+  useEffect(() => {
+    const load = async () => {
+      const response = await fetch(`${apiBase}/announcement`)
+      const data = await response.json()
+      if (response.ok) {
+        setAnnouncement(data.announcement || "")
+      }
+    }
+    load()
+    const interval = setInterval(load, 5000)
+    return () => clearInterval(interval)
   }, [apiBase])
 
   const submitChallenge = async (statementId: number, statement: string) => {
@@ -177,6 +191,11 @@ export default function ChallengesPage() {
               <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/70">
                 Interview Round Details
               </div>
+              {announcement && (
+                <div className="mt-3 rounded border border-neonGreen/30 bg-black/60 p-3 text-sm text-neonGreen/80">
+                  {announcement}
+                </div>
+              )}
               <div className="mt-4 text-sm text-white/80">
                 Marking Scheme:
               </div>

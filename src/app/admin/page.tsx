@@ -8,6 +8,7 @@ import { Input } from "../../components/ui/input"
 export default function AdminPage() {
   const router = useRouter()
   const [ready, setReady] = useState(false)
+  const [activeTab, setActiveTab] = useState<"participants" | "announce">("participants")
   const [participants, setParticipants] = useState<
     {
       id: string
@@ -22,6 +23,8 @@ export default function AdminPage() {
     }[]
   >([])
   const [scores, setScores] = useState<Record<string, { s: string; p: string; d: string }>>({})
+  const [announcement, setAnnouncement] = useState("")
+  const [savingAnnouncement, setSavingAnnouncement] = useState(false)
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
   useEffect(() => {
@@ -53,6 +56,18 @@ export default function AdminPage() {
         }
       }
       setScores(initialScores)
+    }
+    load()
+  }, [apiBase, ready])
+
+  useEffect(() => {
+    if (!ready) return
+    const load = async () => {
+      const response = await fetch(`${apiBase}/announcement`)
+      const data = await response.json()
+      if (response.ok) {
+        setAnnouncement(data.announcement || "")
+      }
     }
     load()
   }, [apiBase, ready])
@@ -96,6 +111,44 @@ export default function AdminPage() {
     )
   }
 
+  const downloadUpload = async (id: string) => {
+    const token = localStorage.getItem("cmd_admin_token")
+    if (!token) return
+    const response = await fetch(`${apiBase}/admin/participants/${id}/upload`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!response.ok) return
+    const blob = await response.blob()
+    const disposition = response.headers.get("Content-Disposition") || ""
+    const filenameMatch = disposition.match(/filename="([^"]+)"/)
+    const filename = filenameMatch?.[1] || "upload"
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = filename
+    link.click()
+    window.URL.revokeObjectURL(url)
+  }
+
+  const saveAnnouncement = async () => {
+    const token = localStorage.getItem("cmd_admin_token")
+    if (!token) return
+    setSavingAnnouncement(true)
+    try {
+      const response = await fetch(`${apiBase}/admin/announcement`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ content: announcement }),
+      })
+      await response.json()
+    } finally {
+      setSavingAnnouncement(false)
+    }
+  }
+
   const rows = useMemo(
     () =>
       participants.map((participant) => ({
@@ -108,12 +161,12 @@ export default function AdminPage() {
   if (!ready) return null
 
   return (
-    <main className="hero-bg relative min-h-screen px-6 py-20 text-white/80">
+    <main className="hero-bg relative h-screen overflow-y-auto px-6 py-20 text-white/80">
       <div className="noise-overlay absolute inset-0 opacity-25" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="sticky top-0 z-20 -mx-2 flex items-center justify-between bg-[#050805]/90 px-2 py-2 backdrop-blur">
           <div className="terminal-title font-orbitron text-3xl text-neonGreen">
             Cmd Admin
           </div>
@@ -122,17 +175,50 @@ export default function AdminPage() {
           </Button>
         </div>
         <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-8 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
-          <div className="text-xs uppercase tracking-[0.35em] text-white/70">
-            Admin Console
+          <div className="terminal-tabs mb-6 inline-flex items-center gap-4">
+            <button
+              type="button"
+              className={`terminal-tab ${activeTab === "participants" ? "terminal-tab-active" : ""}`}
+              onClick={() => setActiveTab("participants")}
+            >
+              Participants
+            </button>
+            <button
+              type="button"
+              className={`terminal-tab ${activeTab === "announce" ? "terminal-tab-active" : ""}`}
+              onClick={() => setActiveTab("announce")}
+            >
+              Announce
+            </button>
           </div>
-          <div className="mt-6 overflow-auto">
-            <table className="w-full min-w-[820px] border-separate border-spacing-y-3 text-sm text-white/80">
+
+          {activeTab === "announce" && (
+            <div className="space-y-4">
+              <div className="text-xs uppercase tracking-[0.35em] text-white/70">
+                Announcement
+              </div>
+              <textarea
+                className="h-40 w-full rounded-lg border border-neonGreen/20 bg-black/60 p-4 text-sm text-white/80 outline-none focus:border-neonGreen/60 focus:ring-2 focus:ring-neonGreen/20"
+                value={announcement}
+                onChange={(event) => setAnnouncement(event.target.value)}
+                placeholder="Type announcement for participants..."
+              />
+              <Button type="button" onClick={saveAnnouncement} disabled={savingAnnouncement}>
+                {savingAnnouncement ? "Saving..." : "Save"}
+              </Button>
+            </div>
+          )}
+
+          {activeTab === "participants" && (
+            <div className="mt-2 overflow-auto">
+              <table className="w-full min-w-[920px] border-separate border-spacing-y-3 text-sm text-white/80">
               <thead className="text-left text-xs uppercase tracking-[0.25em] text-white/50">
                 <tr>
                   <th className="py-2 pr-4">Name</th>
                   <th className="py-2 pr-4">Email</th>
                   <th className="py-2 pr-4">Phone</th>
                   <th className="py-2 pr-4">Sealed</th>
+                  <th className="py-2 pr-4">Doc</th>
                   <th className="py-2 pr-4">S</th>
                   <th className="py-2 pr-4">P</th>
                   <th className="py-2 pr-4">D</th>
@@ -148,6 +234,20 @@ export default function AdminPage() {
                     <td className="px-3 py-3">{participant.phone}</td>
                     <td className="px-3 py-3">
                       {participant.statementId ? `#${participant.statementId}` : "—"}
+                    </td>
+                    <td className="px-3 py-3">
+                      {participant.hasUpload ? (
+                        <button
+                          type="button"
+                          className="text-neonGreen/80 hover:text-neonGreen"
+                          onClick={() => downloadUpload(participant.id)}
+                          aria-label="Download upload"
+                        >
+                          ⬇
+                        </button>
+                      ) : (
+                        "—"
+                      )}
                     </td>
                     <td className="px-3 py-3">
                       <Input
@@ -209,7 +309,7 @@ export default function AdminPage() {
                 ))}
                 {rows.length === 0 && (
                   <tr>
-                    <td colSpan={9} className="px-3 py-6 text-center text-white/50">
+                    <td colSpan={10} className="px-3 py-6 text-center text-white/50">
                       No participants yet.
                     </td>
                   </tr>
@@ -217,6 +317,7 @@ export default function AdminPage() {
               </tbody>
             </table>
           </div>
+          )}
         </div>
       </div>
     </main>
