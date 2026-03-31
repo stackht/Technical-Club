@@ -278,7 +278,7 @@ export default function AdminPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="sticky top-0 z-30 -mx-6 flex flex-col gap-3 bg-[#050805]/95 px-6 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+        <div className="sticky top-0 z-30 -mx-6 flex flex-col gap-3 overflow-x-hidden bg-[#050805]/95 px-6 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
           <div className="terminal-title whitespace-nowrap font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
             Cmd Admin
           </div>
