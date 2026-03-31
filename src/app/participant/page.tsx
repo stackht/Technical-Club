@@ -143,7 +143,7 @@ export default function ChallengesPage() {
   }
 
   return (
-    <main className="hero-bg relative h-screen overflow-y-auto px-6 py-20 text-white/80">
+    <main className="hero-bg relative h-screen overflow-y-auto px-6 py-0 text-white/80">
       <div className="noise-overlay absolute inset-0 opacity-25" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
@@ -161,7 +161,7 @@ export default function ChallengesPage() {
             </Button>
           </div>
         </div>
-        <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
+        <div className="glass-panel mt-6 rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
           <div className="terminal-tabs mb-6 inline-flex items-center gap-4">
             <button
               type="button"
@@ -276,6 +276,9 @@ export default function ChallengesPage() {
             <div className="rounded-lg border border-neonGreen/40 bg-black/70 p-6 shadow-inner shadow-black/70">
               <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/70">
                 Accepted Challenge
+              </div>
+              <div className="mt-2 text-xs uppercase tracking-[0.28em] text-white/70">
+                Upload solution document after your interview round (Idea and Prototype optional).
               </div>
               <div className="mt-3 text-sm text-white/80">
                 <span className="text-neonGreen/80">Problem #{activeChallenge.statementId}</span>
