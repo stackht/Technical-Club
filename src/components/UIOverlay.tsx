@@ -202,7 +202,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
             animate={{ opacity: hideHeroText ? 0 : 1, y: hideHeroText ? -20 : 0 }}
             transition={{ duration: 0.4, ease: "easeOut" }}
             className="terminal-hero-text pointer-events-none absolute inset-0 flex items-center justify-start"
-            style={{ opacity: heroOpacity }}
+            style={{ opacity: hideHeroText ? 0 : 1 }}
           >
             <div className="terminal-bg-text w-full text-left font-orbitron font-bold uppercase leading-none text-[#d7ddd7]/28 drop-shadow-[0_0_50px_rgba(180,190,180,0.2)]">
                 <span className="inline-block origin-left scale-x-[0.8] scale-y-[0.75] tracking-[0.16em]">
