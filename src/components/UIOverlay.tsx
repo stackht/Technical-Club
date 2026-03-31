@@ -209,21 +209,6 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
 
       <animated.div
         ref={overlayRef}
-        onWheel={(event) => {
-          if (hideHeroText) return
-          event.preventDefault()
-          const scroller = document.querySelector(".scroll-stage") as HTMLElement | null
-          if (!scroller) return
-          const lenis = (window as any).__lenis as
-            | { scrollTo?: (target: number, opts?: any) => void }
-            | undefined
-          const targetTop = scroller.scrollTop + event.deltaY
-          if (lenis?.scrollTo) {
-            lenis.scrollTo(targetTop, { immediate: true })
-          } else {
-            scroller.scrollTop = targetTop
-          }
-        }}
         style={{
           transform: springProps.xy.to((x, y) => `translate3d(${x}px, ${y}px, 0)`),
         }}
