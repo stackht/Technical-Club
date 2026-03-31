@@ -12,16 +12,17 @@ export default function PerformanceBoot() {
       document.body.classList.remove("is-initial-load")
     }
 
-    const idle = "requestIdleCallback" in window
-      ? (window as any).requestIdleCallback(clear, { timeout: 2500 })
-      : window.setTimeout(clear, 2000)
+    const idle: number =
+      "requestIdleCallback" in window
+        ? (window as any).requestIdleCallback(clear, { timeout: 2500 })
+        : window.setTimeout(clear, 2000)
 
     return () => {
       clear()
-      if ("cancelIdleCallback" in window && typeof idle === "number") {
+      if ("cancelIdleCallback" in window) {
         ;(window as any).cancelIdleCallback(idle)
       } else {
-        clearTimeout(idle as number)
+        clearTimeout(idle)
       }
     }
   }, [])
