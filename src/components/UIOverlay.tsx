@@ -205,7 +205,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
         style={{
           transform: springProps.xy.to((x, y) => `translate3d(${x}px, ${y}px, 0)`),
         }}
-        className="pointer-events-none absolute inset-0 z-10 flex flex-col justify-center px-6"
+        className="absolute inset-0 z-10 flex flex-col justify-center px-6"
       >
         {variant === "centered" && (
           <>
@@ -227,7 +227,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
           </>
         )}
 
-        <div className="terminal-content-layer mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.7fr]">
+        <div className="terminal-content-layer pointer-events-auto mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.7fr]">
           <div className="flex flex-col gap-8 lg:pr-24" style={{ opacity: heroOpacity }}>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
