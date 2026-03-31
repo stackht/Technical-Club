@@ -21,6 +21,13 @@ type Props = {
 export default function UIOverlay({ variant, hideHeroText = false }: Props) {
   const router = useRouter()
   const [mounted, setMounted] = useState(false)
+  const ctaAnchorRef = useRef<HTMLDivElement | null>(null)
+  const [ctaRect, setCtaRect] = useState<{
+    left: number
+    top: number
+    width: number
+    height: number
+  } | null>(null)
   const [keySeq, setKeySeq] = useState("")
   const [typed, setTyped] = useState("")
   const [activeId, setActiveId] = useState("hero-centered")
@@ -59,6 +66,28 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
   useEffect(() => {
     setMounted(true)
     return () => setMounted(false)
+  }, [])
+
+  useEffect(() => {
+    const updateCta = () => {
+      const anchor = ctaAnchorRef.current
+      if (!anchor) return
+      const rect = anchor.getBoundingClientRect()
+      if (!rect.width || !rect.height) return
+      setCtaRect({
+        left: rect.left,
+        top: rect.top,
+        width: rect.width,
+        height: rect.height,
+      })
+    }
+    updateCta()
+    const raf = requestAnimationFrame(updateCta)
+    window.addEventListener("resize", updateCta)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.removeEventListener("resize", updateCta)
+    }
   }, [])
 
   useEffect(() => {
@@ -212,9 +241,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
         style={{
           transform: springProps.xy.to((x, y) => `translate3d(${x}px, ${y}px, 0)`),
         }}
-        className={`fixed inset-0 z-[60] flex flex-col justify-center px-6 ${
-          hideHeroText ? "pointer-events-none" : "pointer-events-auto"
-        }`}
+        className="pointer-events-none fixed inset-0 z-[60] flex flex-col justify-center px-6"
       >
         {variant === "centered" && (
           <>
@@ -236,7 +263,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
           </>
         )}
 
-        <div className="terminal-content-layer pointer-events-auto mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.7fr]">
+        <div className="terminal-content-layer pointer-events-none mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.7fr]">
           <div className="flex flex-col gap-8 lg:pr-24" style={{ opacity: heroOpacity }}>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -254,33 +281,15 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
           </motion.h1>
 
             <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{
-              opacity: hideHeroText ? 0 : 1,
-              y: hideHeroText ? -10 : 0,
-            }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="pointer-events-auto flex flex-wrap items-center gap-5"
-          >
-            <Button
-              className="group overflow-hidden border-neonGreen/60 text-neonGreen shadow-[0_0_25px_rgba(79,224,204,0.45)] hover:scale-105 hover:text-white hover:shadow-[0_0_45px_rgba(79,224,204,0.85)]"
-              onMouseMove={(event) => {
-                const target = event.currentTarget
-                const rect = target.getBoundingClientRect()
-                const x = event.clientX - rect.left
-                const y = event.clientY - rect.top
-                target.style.setProperty("--ripple-x", `${x}px`)
-                target.style.setProperty("--ripple-y", `${y}px`)
+              initial={{ opacity: 0, y: 20 }}
+              animate={{
+                opacity: hideHeroText ? 0 : 1,
+                y: hideHeroText ? -10 : 0,
               }}
-              onClick={() => {
-                scrollToSection("participate")
-              }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
+              className="pointer-events-none flex flex-wrap items-center gap-5"
             >
-              <span>Join Now</span>
-              <span className="absolute inset-0 -z-10 opacity-0 transition group-hover:opacity-100">
-                <span className="absolute h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-neonGreen/30 blur-3xl [left:var(--ripple-x)] [top:var(--ripple-y)]" />
-              </span>
-            </Button>
+              <div ref={ctaAnchorRef} className="h-12 min-w-[220px]" />
             </motion.div>
           </div>
 
@@ -289,6 +298,39 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
           </div>
         </div>
       </animated.div>
+
+      {variant === "centered" && ctaRect && !hideHeroText && (
+        <div
+          className="fixed z-[80]"
+          style={{
+            left: `${ctaRect.left}px`,
+            top: `${ctaRect.top}px`,
+            width: `${ctaRect.width}px`,
+            height: `${ctaRect.height}px`,
+          }}
+        >
+          <Button
+            className="group h-full w-full overflow-hidden border-neonGreen/60 text-neonGreen shadow-[0_0_25px_rgba(79,224,204,0.45)] hover:scale-105 hover:text-white hover:shadow-[0_0_45px_rgba(79,224,204,0.85)]"
+            onMouseMove={(event) => {
+              const target = event.currentTarget
+              const rect = target.getBoundingClientRect()
+              const x = event.clientX - rect.left
+              const y = event.clientY - rect.top
+              target.style.setProperty("--ripple-x", `${x}px`)
+              target.style.setProperty("--ripple-y", `${y}px`)
+            }}
+            onClick={() => {
+              scrollToSection("participate")
+            }}
+          >
+            <span>Join Now</span>
+            <span className="absolute inset-0 -z-10 opacity-0 transition group-hover:opacity-100">
+              <span className="absolute h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-sm bg-neonGreen/30 blur-3xl [left:var(--ripple-x)] [top:var(--ripple-y)]" />
+            </span>
+          </Button>
+        </div>
+      )}
+
     </>
   )
 
