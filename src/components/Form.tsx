@@ -160,7 +160,7 @@ export default function FormSection() {
               submitCredentials()
             }
           }}
-          className="glass-panel mt-10 max-w-3xl space-y-6 rounded-3xl p-8"
+          className="glass-panel relative z-[70] mt-10 max-w-3xl space-y-6 rounded-3xl p-8"
         >
           {step === "details" && (
             <>
