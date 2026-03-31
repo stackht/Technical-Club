@@ -4,6 +4,7 @@ import cors from "cors"
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
 import nodemailer from "nodemailer"
+import multer from "multer"
 import { z } from "zod"
 import { PrismaClient } from "@prisma/client"
 
@@ -17,6 +18,11 @@ const JWT_SECRET = process.env.JWT_SECRET || "change-me"
 
 app.set("trust proxy", 1)
 app.use(express.json())
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
+})
 
 const normalizeOrigin = (value) => {
   if (!value) return value
@@ -654,6 +660,41 @@ app.post("/challenges/release", authRequired, async (req, res) => {
     return res.status(400).json({ ok: false, message: error.message })
   }
 })
+
+app.post(
+  "/challenges/upload",
+  authRequired,
+  upload.single("file"),
+  async (req, res) => {
+    try {
+      const file = req.file
+      if (!file) {
+        return res.status(400).json({ ok: false, message: "File required." })
+      }
+      const userId = req.userId
+      const active = await prisma.userChallenge.findFirst({
+        where: { userId, releasedAt: null },
+        orderBy: { createdAt: "desc" },
+      })
+      if (!active) {
+        return res.status(400).json({ ok: false, message: "No active challenge." })
+      }
+      await prisma.challengeUpload.create({
+        data: {
+          userId,
+          challengeId: active.id,
+          filename: file.originalname,
+          mimeType: file.mimetype || "application/octet-stream",
+          size: file.size,
+          data: file.buffer,
+        },
+      })
+      return res.json({ ok: true })
+    } catch (error) {
+      return res.status(400).json({ ok: false, message: error.message })
+    }
+  },
+)
 
 app.listen(PORT, () => {
   // eslint-disable-next-line no-console

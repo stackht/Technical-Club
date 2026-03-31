@@ -19,6 +19,7 @@ export default function ChallengesPage() {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState("")
+  const [uploading, setUploading] = useState(false)
   const [activeTab, setActiveTab] = useState<"shell" | "accepted" | "announcement">("shell")
   const [activeChallenge, setActiveChallenge] = useState<{
     id: string
@@ -102,6 +103,29 @@ export default function ChallengesPage() {
     }
   }
 
+  const uploadFile = async (file: File) => {
+    const token = localStorage.getItem("cmd_token")
+    if (!token) return
+    setUploading(true)
+    setMessage("")
+    try {
+      const formData = new FormData()
+      formData.append("file", file)
+      const response = await fetch(`${apiBase}/challenges/upload`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+        body: formData,
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.message || "Upload failed.")
+      setMessage("Document uploaded.")
+    } catch (error: any) {
+      setMessage(error.message || "Upload failed.")
+    } finally {
+      setUploading(false)
+    }
+  }
+
   return (
     <main className="hero-bg relative h-screen overflow-hidden px-6 py-20 text-white/80">
       <div className="noise-overlay absolute inset-0 opacity-25" />
@@ -121,7 +145,7 @@ export default function ChallengesPage() {
             </Button>
           </div>
         </div>
-        <div className="glass-panel max-h-[70vh] overflow-y-auto rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
+        <div className="glass-panel h-[70vh] overflow-y-auto rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
           <div className="terminal-tabs mb-6 inline-flex items-center gap-4">
             <button
               type="button"
@@ -224,13 +248,35 @@ export default function ChallengesPage() {
               </div>
               <div className="mt-3 text-sm text-white/80">{activeChallenge.statement}</div>
               <div className="mt-6 flex justify-end">
-                <Button
-                  className="min-w-[140px]"
-                  onClick={releaseChallenge}
-                  disabled={submitting}
-                >
-                  {submitting ? "Releasing..." : "Release"}
-                </Button>
+                <div className="flex flex-wrap items-center gap-3">
+                  <label className="cursor-pointer">
+                    <input
+                      type="file"
+                      className="hidden"
+                      accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                      onChange={(event) => {
+                        const file = event.target.files?.[0]
+                        if (!file) return
+                        if (file.size > 5 * 1024 * 1024) {
+                          setMessage("File too large (max 5 MB).")
+                          return
+                        }
+                        uploadFile(file)
+                        event.target.value = ""
+                      }}
+                    />
+                    <span className="btn inline-flex min-w-[140px] items-center justify-center px-6 py-3 text-sm font-semibold uppercase tracking-[0.18em] text-neonGreen">
+                      {uploading ? "Uploading..." : "Upload"}
+                    </span>
+                  </label>
+                  <Button
+                    className="min-w-[140px]"
+                    onClick={releaseChallenge}
+                    disabled={submitting}
+                  >
+                    {submitting ? "Releasing..." : "Release"}
+                  </Button>
+                </div>
               </div>
             </div>
           )}

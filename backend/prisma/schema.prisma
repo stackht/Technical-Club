@@ -49,6 +49,24 @@ model UserChallenge {
   releasedAt DateTime?
 
   user User @relation(fields: [userId], references: [id])
+  uploads ChallengeUpload[]
 
   @@index([userId, createdAt])
+}
+
+model ChallengeUpload {
+  id          String   @id @default(cuid())
+  userId      String
+  challengeId String
+  filename    String
+  mimeType    String
+  size        Int
+  data        Bytes
+  createdAt   DateTime @default(now())
+
+  user      User         @relation(fields: [userId], references: [id])
+  challenge UserChallenge @relation(fields: [challengeId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([challengeId, createdAt])
 }
