@@ -279,7 +279,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
         )}
 
         <div className="terminal-content-layer pointer-events-none mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.7fr]">
-          <div className="flex flex-col gap-8 lg:pr-24" style={{ opacity: heroOpacity }}>
+          <div className="flex flex-col gap-8 lg:pr-24 sm:mt-[4vh] lg:mt-[6vh]" style={{ opacity: heroOpacity }}>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{
