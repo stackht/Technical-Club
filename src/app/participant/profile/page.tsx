@@ -52,7 +52,7 @@ export default function ParticipantProfilePage() {
       <div className="relative mx-auto max-w-4xl space-y-6">
         <div className="sticky top-0 z-30 w-full overflow-x-hidden bg-[#050805]/95 py-3 backdrop-blur">
           <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-center gap-3 px-4 text-center sm:px-6">
-            <div className="terminal-title min-w-0 truncate whitespace-nowrap font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
+            <div className="terminal-title terminal-title-plain w-full min-w-0 truncate whitespace-nowrap font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
               Cmd Profile Shell
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">

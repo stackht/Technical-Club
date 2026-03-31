@@ -520,6 +520,17 @@ textarea {
   animation: hackerFlicker 5s infinite;
 }
 
+.terminal-title.terminal-title-plain {
+  justify-content: center;
+  text-align: center;
+}
+
+.terminal-title.terminal-title-plain::before,
+.terminal-title.terminal-title-plain::after {
+  content: "";
+  display: none;
+}
+
 .terminal-title::before,
 .terminal-title::after {
   content: "--------------------";
