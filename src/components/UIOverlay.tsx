@@ -49,7 +49,10 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
     }
     const target = document.getElementById(id)
     if (!target) return
-    const targetCenter = target.offsetTop + target.offsetHeight / 2
+    const scrollerRect = scroller.getBoundingClientRect()
+    const targetRect = target.getBoundingClientRect()
+    const targetCenter =
+      scroller.scrollTop + (targetRect.top - scrollerRect.top) + targetRect.height / 2
     const scrollTop = Math.max(targetCenter - scroller.clientHeight / 2, 0)
     const lenis = (window as any).__lenis as { scrollTo?: (target: number, opts?: any) => void } | undefined
     if (lenis?.scrollTo) {
