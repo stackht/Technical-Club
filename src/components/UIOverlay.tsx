@@ -210,6 +210,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
       <animated.div
         ref={overlayRef}
         onWheel={(event) => {
+          if (hideHeroText) return
           event.preventDefault()
           const scroller = document.querySelector(".scroll-stage") as HTMLElement | null
           if (!scroller) return
@@ -226,7 +227,9 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
         style={{
           transform: springProps.xy.to((x, y) => `translate3d(${x}px, ${y}px, 0)`),
         }}
-        className="pointer-events-auto fixed inset-0 z-[60] flex flex-col justify-center px-6"
+        className={`fixed inset-0 z-[60] flex flex-col justify-center px-6 ${
+          hideHeroText ? "pointer-events-none" : "pointer-events-auto"
+        }`}
       >
         {variant === "centered" && (
           <>
@@ -248,7 +251,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
           </>
         )}
 
-        <div className="terminal-content-layer pointer-events-none mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.7fr]">
+        <div className="terminal-content-layer pointer-events-auto mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.7fr]">
           <div className="flex flex-col gap-8 lg:pr-24" style={{ opacity: heroOpacity }}>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
