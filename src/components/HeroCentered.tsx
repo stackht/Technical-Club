@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useEffect, useRef } from "react"
+import { Suspense, useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
 import { Canvas } from "@react-three/fiber"
@@ -42,6 +42,7 @@ type Props = {
 export default function HeroCentered({ hideHeroText = false, rotateRef }: Props) {
   const scrollRef = useRef(0)
   const hoveredRef = useRef(false)
+  const [isMobile, setIsMobile] = useState(false)
   const pathname = usePathname()
 
   useEffect(() => {
@@ -64,6 +65,13 @@ export default function HeroCentered({ hideHeroText = false, rotateRef }: Props)
     scrollRef.current = 0
   }, [pathname])
 
+  useEffect(() => {
+    const update = () => setIsMobile(window.innerWidth < 640)
+    update()
+    window.addEventListener("resize", update)
+    return () => window.removeEventListener("resize", update)
+  }, [])
+
   return (
     <section id="hero-centered" className="relative min-h-screen overflow-hidden bg-[#050805]">
       <div className="noise-overlay absolute inset-0 opacity-25" />
@@ -83,7 +91,7 @@ export default function HeroCentered({ hideHeroText = false, rotateRef }: Props)
         <Canvas
           key={pathname}
           camera={{ position: [0, 0.2, 7], fov: 42 }}
-          dpr={1}
+          dpr={isMobile ? 0.9 : 1}
           gl={{ antialias: false, powerPreference: "high-performance" }}
           className="h-full w-full pointer-events-none"
         >

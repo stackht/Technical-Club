@@ -6,6 +6,7 @@
   --neon-blue: #00e5ff;
   --neon-green: #00ff00;
   --glass: rgba(4, 10, 5, 0.78);
+  color-scheme: dark;
 }
 
 @media (max-width: 640px) {
@@ -13,6 +14,14 @@
     --neon-green: #5dff6b;
     --neon-blue: #4cf7ff;
     --foreground: #e9ffe9;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --neon-green: #7dff8a;
+    --neon-blue: #67f7ff;
+    --foreground: #f1fff1;
   }
 }
 

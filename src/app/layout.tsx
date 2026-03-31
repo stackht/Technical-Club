@@ -39,6 +39,9 @@ export default function RootLayout({
       lang="en"
       className={`${orbitron.variable} ${space.variable} ${cinzel.variable} h-full antialiased`}
     >
+      <head>
+        <meta name="color-scheme" content="dark" />
+      </head>
       <body className="min-h-full bg-ink text-white">
         <ReduxProvider>
           <ConsoleSilencer />
