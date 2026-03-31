@@ -2,7 +2,7 @@
 
 import { useMemo, useRef, useState, useLayoutEffect, useEffect } from "react"
 import { useCursor, useGLTF } from "@react-three/drei"
-import { DRACOLoader } from "three-stdlib"
+import { DRACOLoader, KTX2Loader } from "three-stdlib"
 import { useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
 
@@ -36,12 +36,21 @@ export default function CharacterModel({
   const modelScale = centered ? (isSmall ? 1.5 : 1.8) : 0.42
   const emissiveMaterials = useRef<THREE.MeshStandardMaterial[]>([])
   const emissiveBase = useRef(new Map<THREE.MeshStandardMaterial, number>())
+  const { gl } = useThree()
+  const ktx2Loader = useMemo(() => {
+    const loader = new KTX2Loader()
+    loader.setTranscoderPath("/basis/")
+    loader.detectSupport(gl)
+    return loader
+  }, [gl])
+
   const { scene } = useGLTF(
     "/models/scene.gltf",
     true,
     undefined,
     (loader) => {
       loader.setDRACOLoader(dracoLoader)
+      loader.setKTX2Loader(ktx2Loader)
       loader.manager.setURLModifier((url) => {
         if (url.includes("Assets/Models/")) return url.replace("Assets/Models/", "models/")
         return url

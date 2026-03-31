@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useCursor, useGLTF } from "@react-three/drei"
 import { Group } from "three"
-import { DRACOLoader } from "three-stdlib"
-import { useFrame } from "@react-three/fiber"
+import { DRACOLoader, KTX2Loader } from "three-stdlib"
+import { useFrame, useThree } from "@react-three/fiber"
 import * as THREE from "three"
 
 const dracoLoader = new DRACOLoader()
@@ -12,12 +12,20 @@ dracoLoader.setDecoderPath("/draco/")
 
 export default function Model() {
   const groupRef = useRef<Group>(null)
+  const { gl } = useThree()
+  const ktx2Loader = useMemo(() => {
+    const loader = new KTX2Loader()
+    loader.setTranscoderPath("/basis/")
+    loader.detectSupport(gl)
+    return loader
+  }, [gl])
   const { scene } = useGLTF(
     "/models/model.glb",
     true,
     undefined,
     (loader) => {
       loader.setDRACOLoader(dracoLoader)
+      loader.setKTX2Loader(ktx2Loader)
     },
   )
   const [hovered, setHovered] = useState(false)

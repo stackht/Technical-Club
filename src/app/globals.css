@@ -403,10 +403,11 @@ textarea {
   height: 100vh;
   overflow-y: auto;
   overflow-x: hidden;
-  scroll-behavior: smooth;
+  scroll-behavior: auto;
   box-sizing: border-box;
   padding-top: 180px;
   scroll-padding-top: 180px;
+  will-change: scroll-position;
 }
 
 .scroll-spacer {

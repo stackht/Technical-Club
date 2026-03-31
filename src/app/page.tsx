@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { usePathname } from "next/navigation"
 import { motion } from "framer-motion"
+import Lenis from "lenis"
 import CursorGlow from "../components/CursorGlow"
 import HeroCentered from "../components/HeroCentered"
 import VisionAgenda from "../components/sections/VisionAgenda"
@@ -94,6 +95,28 @@ export default function Home() {
   }, [])
 
   useEffect(() => {
+    const scroller = scrollRef.current
+    if (!scroller) return
+    const content = scroller.querySelector(".page-depth") as HTMLElement | null
+    const lenis = new Lenis({
+      wrapper: scroller,
+      content: content ?? undefined,
+      lerp: 0.08,
+      smoothWheel: true,
+    })
+    let rafId = 0
+    const raf = (time: number) => {
+      lenis.raf(time)
+      rafId = requestAnimationFrame(raf)
+    }
+    rafId = requestAnimationFrame(raf)
+    return () => {
+      cancelAnimationFrame(rafId)
+      lenis.destroy()
+    }
+  }, [])
+
+  useEffect(() => {
     if (pathname !== "/") return
     const scroller = scrollRef.current
     if (!scroller) return
@@ -120,10 +143,10 @@ export default function Home() {
     if (!scroller) return
     const handleWheel = (event: WheelEvent) => {
       if (document.body.dataset.modalOpen === "true") return
-      scroller.scrollTop += event.deltaY
+      event.preventDefault()
     }
-    window.addEventListener("wheel", handleWheel, { passive: true })
-    return () => window.removeEventListener("wheel", handleWheel)
+    scroller.addEventListener("wheel", handleWheel, { passive: false })
+    return () => scroller.removeEventListener("wheel", handleWheel)
   }, [])
 
 
