@@ -599,7 +599,11 @@ app.get("/announcement", async (req, res) => {
     })
     return res.json({
       ok: true,
-      announcements: announcements.map((item) => item.content),
+      announcements: announcements.map((item) => ({
+        id: item.id,
+        content: item.content,
+        updatedAt: item.updatedAt,
+      })),
     })
   } catch (error) {
     return res.status(400).json({ ok: false, message: error.message })
@@ -646,6 +650,8 @@ app.get("/admin/participants", adminRequired, async (req, res) => {
       name: user.name,
       email: user.email,
       phone: user.phone,
+      year: user.year,
+      branch: user.branch,
       statementId: user.challenges?.[0]?.statementId ?? null,
       sScore: user.sScore,
       pScore: user.pScore,
@@ -714,7 +720,45 @@ app.post("/admin/announcement", adminRequired, async (req, res) => {
     const created = await prisma.announcement.create({
       data: { content: data.content },
     })
-    return res.json({ ok: true, announcement: created.content })
+    return res.json({
+      ok: true,
+      announcement: {
+        id: created.id,
+        content: created.content,
+        updatedAt: created.updatedAt,
+      },
+    })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.put("/admin/announcement/:id", adminRequired, async (req, res) => {
+  try {
+    const data = announcementSchema.parse(req.body)
+    const id = Number(req.params.id)
+    const updated = await prisma.announcement.update({
+      where: { id },
+      data: { content: data.content },
+    })
+    return res.json({
+      ok: true,
+      announcement: {
+        id: updated.id,
+        content: updated.content,
+        updatedAt: updated.updatedAt,
+      },
+    })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.delete("/admin/announcement/:id", adminRequired, async (req, res) => {
+  try {
+    const id = Number(req.params.id)
+    await prisma.announcement.delete({ where: { id } })
+    return res.json({ ok: true })
   } catch (error) {
     return res.status(400).json({ ok: false, message: error.message })
   }

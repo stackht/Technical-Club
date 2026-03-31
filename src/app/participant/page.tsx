@@ -26,7 +26,9 @@ export default function ChallengesPage() {
     statementId: number
     statement: string
   } | null>(null)
-  const [announcements, setAnnouncements] = useState<string[]>([])
+  const [announcements, setAnnouncements] = useState<
+    { id: number; content: string; updatedAt: string }[]
+  >([])
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
   useEffect(() => {
@@ -187,51 +189,56 @@ export default function ChallengesPage() {
           </div>
 
           {activeTab === "announcement" && (
-            <div className="rounded-lg border border-neonGreen/40 bg-black/70 p-6 shadow-inner shadow-black/70">
-              <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/70">
-                Interview Round Details
+            <div className="space-y-4">
+              <div className="rounded-lg border border-neonGreen/40 bg-black/70 p-6 shadow-inner shadow-black/70">
+                <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/70">
+                  Interview Round Details
+                </div>
+                <div className="mt-4 text-sm text-white/80">
+                  Marking Scheme:
+                </div>
+                <ul className="mt-3 text-sm text-white/80">
+                  <li>
+                    S (3 marks): Skills
+                  </li>
+                  <li>
+                    P (3 marks): Project
+                  </li>
+                  <li>
+                    D (4 marks): Dynamic Thinking
+                  </li>
+                </ul>
+                <div className="mt-4 text-sm text-white/80">
+                  Problem statement is a part of Dynamic Thinking.
+                </div>
+                <div className="mt-3 text-sm text-white/80">
+                  Minimum to pass interview:
+                </div>
+                <ul className="mt-2 text-sm text-white/80">
+                  <li>1 mark in Skills</li>
+                  <li>1 mark in Project</li>
+                  <li>2 marks in Dynamic Thinking</li>
+                </ul>
+                <div className="mt-4 text-xs uppercase tracking-[0.28em] text-neonGreen/70">
+                  Dates to be announced soon
+                </div>
               </div>
-              {announcements.map((item, index) => (
+              {announcements.map((item) => (
                 <div
-                  key={`${item}-${index}`}
-                  className="mt-3 rounded border border-neonGreen/30 bg-black/60 p-3 text-sm text-neonGreen/80"
+                  key={item.id}
+                  className="rounded-lg border border-neonGreen/30 bg-black/60 p-4 text-sm text-neonGreen/80"
                 >
-                  {item}
+                  <div className="text-[10px] uppercase tracking-[0.28em] text-neonGreen/60">
+                    {new Date(item.updatedAt).toLocaleString()}
+                  </div>
+                  <div className="mt-2 text-sm text-white/80">{item.content}</div>
                 </div>
               ))}
               {!announcements.length && (
-                <div className="mt-3 rounded border border-neonGreen/30 bg-black/60 p-3 text-sm text-neonGreen/80">
-                  Dates to be announced soon.
+                <div className="rounded-lg border border-neonGreen/30 bg-black/60 p-4 text-sm text-neonGreen/80">
+                  No additional announcements yet.
                 </div>
               )}
-              <div className="mt-4 text-sm text-white/80">
-                Marking Scheme:
-              </div>
-              <ul className="mt-3 text-sm text-white/80">
-                <li>
-                  S (3 marks): Skills
-                </li>
-                <li>
-                  P (3 marks): Project
-                </li>
-                <li>
-                  D (4 marks): Dynamic Thinking
-                </li>
-              </ul>
-              <div className="mt-4 text-sm text-white/80">
-                Problem statement is a part of Dynamic Thinking.
-              </div>
-              <div className="mt-3 text-sm text-white/80">
-                Minimum to pass interview:
-              </div>
-              <ul className="mt-2 text-sm text-white/80">
-                <li>1 mark in Skills</li>
-                <li>1 mark in Project</li>
-                <li>2 marks in Dynamic Thinking</li>
-              </ul>
-              <div className="mt-4 text-xs uppercase tracking-[0.28em] text-neonGreen/70">
-                Dates to be announced soon
-              </div>
             </div>
           )}
 

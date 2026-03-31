@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useRef, useState } from "react"
+import { Fragment, useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
@@ -15,6 +15,8 @@ export default function AdminPage() {
       name: string
       email: string
       phone: string
+      year: string
+      branch: string
       statementId: number | null
       hasUpload: boolean
       sScore: number | null
@@ -25,7 +27,13 @@ export default function AdminPage() {
   >([])
   const [scores, setScores] = useState<Record<string, { s: string; p: string; d: string }>>({})
   const [announcement, setAnnouncement] = useState("")
+  const [announcements, setAnnouncements] = useState<
+    { id: number; content: string; updatedAt: string }[]
+  >([])
+  const [editingId, setEditingId] = useState<number | null>(null)
   const [savingAnnouncement, setSavingAnnouncement] = useState(false)
+  const [yearFilter, setYearFilter] = useState("ALL")
+  const [branchFilter, setBranchFilter] = useState("ALL")
   const prevScoresRef = useRef<Record<string, string>>({})
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
@@ -67,8 +75,8 @@ export default function AdminPage() {
     const load = async () => {
       const response = await fetch(`${apiBase}/announcement`)
       const data = await response.json()
-      if (response.ok && data.announcements?.length) {
-        setAnnouncement(data.announcements[0])
+      if (response.ok) {
+        setAnnouncements(data.announcements || [])
       }
     }
     load()
@@ -176,17 +184,58 @@ export default function AdminPage() {
     if (!token) return
     setSavingAnnouncement(true)
     try {
-      const response = await fetch(`${apiBase}/admin/announcement`, {
-        method: "POST",
+      const url = editingId
+        ? `${apiBase}/admin/announcement/${editingId}`
+        : `${apiBase}/admin/announcement`
+      const response = await fetch(url, {
+        method: editingId ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ content: announcement }),
       })
-      await response.json()
+      const data = await response.json()
+      if (response.ok) {
+        if (editingId) {
+          setAnnouncements((prev) =>
+            prev.map((item) =>
+              item.id === editingId
+                ? { ...item, content: data.announcement?.content || announcement, updatedAt: data.announcement?.updatedAt || item.updatedAt }
+                : item,
+            ),
+          )
+        } else if (data.announcement) {
+          setAnnouncements((prev) => [
+            { id: data.announcement.id, content: data.announcement.content, updatedAt: data.announcement.updatedAt },
+            ...prev,
+          ])
+        }
+        setAnnouncement("")
+        setEditingId(null)
+      }
     } finally {
       setSavingAnnouncement(false)
+    }
+  }
+
+  const editAnnouncement = (item: { id: number; content: string }) => {
+    setEditingId(item.id)
+    setAnnouncement(item.content)
+  }
+
+  const deleteAnnouncement = async (id: number) => {
+    const token = localStorage.getItem("cmd_admin_token")
+    if (!token) return
+    const response = await fetch(`${apiBase}/admin/announcement/${id}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (!response.ok) return
+    setAnnouncements((prev) => prev.filter((item) => item.id !== id))
+    if (editingId === id) {
+      setEditingId(null)
+      setAnnouncement("")
     }
   }
 
@@ -198,6 +247,28 @@ export default function AdminPage() {
       })),
     [participants, scores],
   )
+
+  const filteredRows = useMemo(() => {
+    return rows.filter((row) => {
+      if (yearFilter !== "ALL" && row.year !== yearFilter) return false
+      if (branchFilter !== "ALL" && row.branch !== branchFilter) return false
+      return true
+    })
+  }, [branchFilter, rows, yearFilter])
+
+  const groupedRows = useMemo(() => {
+    const groups = new Map<string, { year: string; branch: string; items: typeof rows }>()
+    for (const row of filteredRows) {
+      const year = row.year || "—"
+      const branch = row.branch || "—"
+      const key = `${year}::${branch}`
+      if (!groups.has(key)) {
+        groups.set(key, { year, branch, items: [] as typeof rows })
+      }
+      groups.get(key)!.items.push(row)
+    }
+    return Array.from(groups.values())
+  }, [filteredRows, rows])
 
   if (!ready) return null
 
@@ -236,7 +307,7 @@ export default function AdminPage() {
           {activeTab === "announce" && (
             <div className="space-y-4">
               <div className="text-xs uppercase tracking-[0.35em] text-white/70">
-                Announcement
+                {editingId ? "Edit Announcement" : "Announcement"}
               </div>
               <textarea
                 className="h-40 w-full rounded-lg border border-neonGreen/20 bg-black/60 p-4 text-sm text-white/80 outline-none focus:border-neonGreen/60 focus:ring-2 focus:ring-neonGreen/20"
@@ -244,20 +315,93 @@ export default function AdminPage() {
                 onChange={(event) => setAnnouncement(event.target.value)}
                 placeholder="Type announcement for participants..."
               />
-              <Button type="button" onClick={saveAnnouncement} disabled={savingAnnouncement}>
-                {savingAnnouncement ? "Saving..." : "Save"}
-              </Button>
+              <div className="flex flex-wrap items-center gap-3">
+                <Button type="button" onClick={saveAnnouncement} disabled={savingAnnouncement}>
+                  {savingAnnouncement ? "Saving..." : editingId ? "Update" : "Save"}
+                </Button>
+                {editingId && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => {
+                      setEditingId(null)
+                      setAnnouncement("")
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                )}
+              </div>
+              <div className="mt-6 space-y-3">
+                <div className="text-xs uppercase tracking-[0.35em] text-white/60">
+                  Announcement History
+                </div>
+                {announcements.length === 0 && (
+                  <div className="rounded border border-white/10 bg-black/40 p-4 text-sm text-white/60">
+                    No announcements yet.
+                  </div>
+                )}
+                {announcements.map((item) => (
+                  <div key={item.id} className="rounded border border-neonGreen/20 bg-black/50 p-4">
+                    <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/60">
+                      {new Date(item.updatedAt).toLocaleString()}
+                    </div>
+                    <div className="mt-2 text-sm text-white/80">{item.content}</div>
+                    <div className="mt-3 flex items-center gap-3">
+                      <Button type="button" variant="ghost" onClick={() => editAnnouncement(item)}>
+                        Edit
+                      </Button>
+                      <Button type="button" variant="ghost" onClick={() => deleteAnnouncement(item.id)}>
+                        Delete
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
           {activeTab === "participants" && (
             <div className="mt-2 overflow-auto">
+              <div className="mb-4 flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.28em] text-white/70">
+                <label className="flex items-center gap-2">
+                  <span>Year</span>
+                  <select
+                    className="h-9 rounded border border-neonGreen/30 bg-black/60 px-2 text-xs text-white/80"
+                    value={yearFilter}
+                    onChange={(event) => setYearFilter(event.target.value)}
+                  >
+                    <option value="ALL">All</option>
+                    <option value="FE">FE</option>
+                    <option value="SE">SE</option>
+                    <option value="TE">TE</option>
+                    <option value="BE">BE</option>
+                  </select>
+                </label>
+                <label className="flex items-center gap-2">
+                  <span>Branch</span>
+                  <select
+                    className="h-9 rounded border border-neonGreen/30 bg-black/60 px-2 text-xs text-white/80"
+                    value={branchFilter}
+                    onChange={(event) => setBranchFilter(event.target.value)}
+                  >
+                    <option value="ALL">All</option>
+                    <option value="AI&DS">AI&DS</option>
+                    <option value="AIML">AIML</option>
+                    <option value="IOT">IOT</option>
+                    <option value="COMP">COMP</option>
+                    <option value="MECH">MECH</option>
+                  </select>
+                </label>
+              </div>
               <table className="w-full min-w-[920px] border-separate border-spacing-y-3 text-sm text-white/80">
               <thead className="text-left text-xs uppercase tracking-[0.25em] text-white/50">
                 <tr>
                   <th className="py-2 pr-4">Name</th>
                   <th className="py-2 pr-4">Email</th>
                   <th className="py-2 pr-4">Phone</th>
+                  <th className="py-2 pr-4">Year</th>
+                  <th className="py-2 pr-4">Branch</th>
                   <th className="py-2 pr-4">Sealed</th>
                   <th className="py-2 pr-4">Doc</th>
                   <th className="py-2 pr-4">S</th>
@@ -268,89 +412,100 @@ export default function AdminPage() {
                 </tr>
               </thead>
               <tbody>
-                {rows.map((participant) => (
-                  <tr key={participant.id} className="bg-black/40">
-                    <td className="rounded-l-md px-3 py-3">{participant.name}</td>
-                    <td className="px-3 py-3">{participant.email}</td>
-                    <td className="px-3 py-3">{participant.phone}</td>
-                    <td className="px-3 py-3">
-                      {participant.statementId ? `#${participant.statementId}` : "—"}
-                    </td>
-                    <td className="px-3 py-3">
-                      {participant.hasUpload ? (
-                        <button
-                          type="button"
-                          className="text-neonGreen/80 hover:text-neonGreen"
-                          onClick={() => downloadUpload(participant.id)}
-                          aria-label="Download upload"
-                        >
-                          ⬇
-                        </button>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
-                    <td className="px-3 py-3">
-                      <Input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={participant.scores.s}
-                        onChange={(event) =>
-                          updateScore(participant.id, "s", event.target.value)
-                        }
-                        className="h-9 w-16 bg-black/60"
-                      />
-                    </td>
-                    <td className="px-3 py-3">
-                      <Input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={participant.scores.p}
-                        onChange={(event) =>
-                          updateScore(participant.id, "p", event.target.value)
-                        }
-                        className="h-9 w-16 bg-black/60"
-                      />
-                    </td>
-                    <td className="px-3 py-3">
-                      <Input
-                        type="number"
-                        min={0}
-                        max={100}
-                        value={participant.scores.d}
-                        onChange={(event) =>
-                          updateScore(participant.id, "d", event.target.value)
-                        }
-                        className="h-9 w-16 bg-black/60"
-                      />
-                    </td>
-                    <td className="px-3 py-3 text-xs">{participant.reviewStatus}</td>
-                    <td className="rounded-r-md px-3 py-3">
-                      <div className="flex items-center gap-2">
-                        <Button
-                          type="button"
-                          className="px-4 py-2"
-                          onClick={() => submitReview(participant.id, "APPROVED")}
-                        >
-                          Approve
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          className="px-4 py-2"
-                          onClick={() => submitReview(participant.id, "REJECTED")}
-                        >
-                          Reject
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
+                {groupedRows.map((group) => (
+                  <Fragment key={`${group.year}-${group.branch}`}>
+                    <tr className="bg-black/60">
+                      <td colSpan={12} className="rounded-md px-3 py-2 text-xs uppercase tracking-[0.28em] text-neonGreen/70">
+                        {group.year} / {group.branch}
+                      </td>
+                    </tr>
+                    {group.items.map((participant) => (
+                      <tr key={participant.id} className="bg-black/40">
+                        <td className="rounded-l-md px-3 py-3">{participant.name}</td>
+                        <td className="px-3 py-3">{participant.email}</td>
+                        <td className="px-3 py-3">{participant.phone}</td>
+                        <td className="px-3 py-3">{participant.year}</td>
+                        <td className="px-3 py-3">{participant.branch}</td>
+                        <td className="px-3 py-3">
+                          {participant.statementId ? `#${participant.statementId}` : "—"}
+                        </td>
+                        <td className="px-3 py-3">
+                          {participant.hasUpload ? (
+                            <button
+                              type="button"
+                              className="text-neonGreen/80 hover:text-neonGreen"
+                              onClick={() => downloadUpload(participant.id)}
+                              aria-label="Download upload"
+                            >
+                              ⬇
+                            </button>
+                          ) : (
+                            "—"
+                          )}
+                        </td>
+                        <td className="px-3 py-3">
+                          <Input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={participant.scores.s}
+                            onChange={(event) =>
+                              updateScore(participant.id, "s", event.target.value)
+                            }
+                            className="h-9 w-16 bg-black/60"
+                          />
+                        </td>
+                        <td className="px-3 py-3">
+                          <Input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={participant.scores.p}
+                            onChange={(event) =>
+                              updateScore(participant.id, "p", event.target.value)
+                            }
+                            className="h-9 w-16 bg-black/60"
+                          />
+                        </td>
+                        <td className="px-3 py-3">
+                          <Input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={participant.scores.d}
+                            onChange={(event) =>
+                              updateScore(participant.id, "d", event.target.value)
+                            }
+                            className="h-9 w-16 bg-black/60"
+                          />
+                        </td>
+                        <td className="px-3 py-3 text-xs">{participant.reviewStatus}</td>
+                        <td className="rounded-r-md px-3 py-3">
+                          <div className="flex items-center gap-2">
+                            <Button
+                              type="button"
+                              className="px-4 py-2"
+                              onClick={() => submitReview(participant.id, "APPROVED")}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className="px-4 py-2"
+                              onClick={() => submitReview(participant.id, "REJECTED")}
+                            >
+                              Reject
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </Fragment>
                 ))}
-                {rows.length === 0 && (
+                {groupedRows.length === 0 && (
                   <tr>
-                    <td colSpan={10} className="px-3 py-6 text-center text-white/50">
+                    <td colSpan={12} className="px-3 py-6 text-center text-white/50">
                       No participants yet.
                     </td>
                   </tr>
