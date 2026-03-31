@@ -19,7 +19,7 @@ export default function ChallengesPage() {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState("")
-  const [activeTab, setActiveTab] = useState<"shell" | "accepted">("shell")
+  const [activeTab, setActiveTab] = useState<"shell" | "accepted" | "announcement">("shell")
   const [activeChallenge, setActiveChallenge] = useState<{
     id: string
     statementId: number
@@ -109,7 +109,7 @@ export default function ChallengesPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
         <div className="terminal-title font-orbitron text-3xl text-neonGreen">
-          Cmd Problem Shell
+          Cmd User Shell
         </div>
         <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
           <div className="terminal-tabs mb-6 inline-flex items-center gap-4">
@@ -119,6 +119,13 @@ export default function ChallengesPage() {
               onClick={() => setActiveTab("shell")}
             >
               Problem Shell
+            </button>
+            <button
+              type="button"
+              className={`terminal-tab ${activeTab === "announcement" ? "terminal-tab-active" : ""}`}
+              onClick={() => setActiveTab("announcement")}
+            >
+              Announcement
             </button>
             {activeChallenge && (
               <button
@@ -130,6 +137,42 @@ export default function ChallengesPage() {
               </button>
             )}
           </div>
+
+          {activeTab === "announcement" && (
+            <div className="rounded-lg border border-neonGreen/40 bg-black/70 p-6 shadow-inner shadow-black/70">
+              <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/70">
+                Interview Round Details
+              </div>
+              <div className="mt-4 text-sm text-white/80">
+                Marking Scheme:
+              </div>
+              <ul className="mt-3 text-sm text-white/80">
+                <li>
+                  S (3 marks): Skills
+                </li>
+                <li>
+                  P (3 marks): Project
+                </li>
+                <li>
+                  D (4 marks): Dynamic Thinking
+                </li>
+              </ul>
+              <div className="mt-4 text-sm text-white/80">
+                Problem statement is a part of Dynamic Thinking.
+              </div>
+              <div className="mt-3 text-sm text-white/80">
+                Minimum to pass interview:
+              </div>
+              <ul className="mt-2 text-sm text-white/80">
+                <li>1 mark in Skills</li>
+                <li>1 mark in Project</li>
+                <li>2 marks in Dynamic Thinking</li>
+              </ul>
+              <div className="mt-4 text-xs uppercase tracking-[0.28em] text-neonGreen/70">
+                Dates to be announced soon
+              </div>
+            </div>
+          )}
 
           {activeTab === "shell" && (
             <>
