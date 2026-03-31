@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050805;
-  --foreground: #d7ffd9;
+  --background: #090f09;
+  --foreground: #e6ffea;
   --neon-blue: #00e5ff;
   --neon-green: #00ff00;
   --glass: rgba(4, 10, 5, 0.78);
@@ -34,7 +34,7 @@ body {
   font-family: "Cascadia Mono", "Consolas", "SFMono-Regular", "Menlo", "Monaco",
     "Liberation Mono", ui-monospace, monospace;
   letter-spacing: 0.01em;
-  text-shadow: 0 0 8px rgba(0, 255, 0, 0.25);
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.28);
   min-height: 100vh;
   overflow: hidden;
 }

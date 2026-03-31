@@ -13,6 +13,7 @@ import SelectionCriteria from "../components/sections/SelectionCriteria"
 import TeamTasks from "../components/sections/TeamTasks"
 import OurGoals from "../components/sections/OurGoals"
 import WhyTrustUs from "../components/sections/WhyTrustUs"
+import WhoAreWe from "../components/sections/WhoAreWe"
 import FormSection from "../components/Form"
 
 export default function Home() {
@@ -153,6 +154,7 @@ export default function Home() {
           <TeamTasks />
           <OurGoals />
           <WhyTrustUs />
+          <WhoAreWe />
           <FormSection />
           <div className="scroll-spacer-end" />
         </div>
