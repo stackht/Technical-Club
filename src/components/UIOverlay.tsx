@@ -42,7 +42,11 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
     }
     const target = document.getElementById(id)
     if (!target) return
-    const targetCenter = target.offsetTop + target.offsetHeight / 2
+    const scrollerRect = scroller.getBoundingClientRect()
+    const targetRect = target.getBoundingClientRect()
+    const currentTop = scroller.scrollTop
+    const targetCenter =
+      currentTop + (targetRect.top - scrollerRect.top) + targetRect.height / 2
     const scrollTop = Math.max(targetCenter - scroller.clientHeight / 2, 0)
     const lenis = (window as any).__lenis as { scrollTo?: (target: number, opts?: any) => void } | undefined
     if (lenis?.scrollTo) {
@@ -209,24 +213,10 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
 
       <animated.div
         ref={overlayRef}
-        onWheel={(event) => {
-          event.preventDefault()
-          const scroller = document.querySelector(".scroll-stage") as HTMLElement | null
-          if (!scroller) return
-          const lenis = (window as any).__lenis as
-            | { scrollTo?: (target: number, opts?: any) => void }
-            | undefined
-          const targetTop = scroller.scrollTop + event.deltaY
-          if (lenis?.scrollTo) {
-            lenis.scrollTo(targetTop, { immediate: true })
-          } else {
-            scroller.scrollTop = targetTop
-          }
-        }}
         style={{
           transform: springProps.xy.to((x, y) => `translate3d(${x}px, ${y}px, 0)`),
         }}
-        className="pointer-events-auto fixed inset-0 z-[60] flex flex-col justify-center px-6"
+        className="pointer-events-none fixed inset-x-0 top-0 z-[60] h-screen flex flex-col justify-center px-6"
       >
         {variant === "centered" && (
           <>
