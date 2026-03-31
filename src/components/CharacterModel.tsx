@@ -26,12 +26,17 @@ export default function CharacterModel({
   const { size } = useThree()
   const hasInitialized = useRef(false)
   const isSmall = size.width < 900
+  const isMobile = size.width < 640
   const basePosition = useMemo(
     () =>
       centered
-        ? new THREE.Vector3(isSmall ? 1.9 : 2.8, isSmall ? 0.1 : -0.2, 0)
+        ? new THREE.Vector3(
+            isMobile ? 0.9 : isSmall ? 1.6 : 2.8,
+            isSmall ? 0.1 : -0.2,
+            0,
+          )
         : new THREE.Vector3(3.2, -1.1, 0),
-    [centered, isSmall],
+    [centered, isMobile, isSmall],
   )
   const modelScale = centered ? (isSmall ? 1.5 : 1.8) : 0.42
   const emissiveMaterials = useRef<THREE.MeshStandardMaterial[]>([])
