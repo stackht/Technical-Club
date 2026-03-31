@@ -112,7 +112,7 @@ export default function Home() {
     const scroller = scrollRef.current
     if (!scroller) return
     const handleWheel = (event: WheelEvent) => {
-      if (document.body.dataset.modalOpen === "true") return
+      if (document.body.dataset.modalOpen !== "true") return
       event.preventDefault()
     }
     scroller.addEventListener("wheel", handleWheel, { passive: false })
