@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useMemo, useRef, useState } from "react"
+import { createPortal } from "react-dom"
 import { motion } from "framer-motion"
 import { useSpring, animated } from "@react-spring/web"
 import gsap from "gsap"
@@ -19,6 +20,7 @@ type Props = {
 
 export default function UIOverlay({ variant, hideHeroText = false }: Props) {
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
   const [keySeq, setKeySeq] = useState("")
   const [typed, setTyped] = useState("")
   const [activeId, setActiveId] = useState("hero-centered")
@@ -53,6 +55,11 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
     setActiveId(id)
     scrollToSection(id)
   }
+
+  useEffect(() => {
+    setMounted(true)
+    return () => setMounted(false)
+  }, [])
 
   useEffect(() => {
     const fullText = "Code Medium"
@@ -169,7 +176,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
     }
   }, [])
 
-  return (
+  const overlay = (
     <>
       {variant === "centered" && (
         <div className="terminal-header terminal-header-layer pointer-events-auto fixed left-0 right-0 top-6 mx-auto flex w-full max-w-6xl items-center justify-between text-xs uppercase tracking-[0.35em] text-white/60">
@@ -205,7 +212,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
         style={{
           transform: springProps.xy.to((x, y) => `translate3d(${x}px, ${y}px, 0)`),
         }}
-        className="absolute inset-0 z-10 flex flex-col justify-center px-6"
+        className="pointer-events-none fixed inset-0 z-[60] flex flex-col justify-center px-6"
       >
         {variant === "centered" && (
           <>
@@ -282,4 +289,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
       </animated.div>
     </>
   )
+
+  if (!mounted) return null
+  return createPortal(overlay, document.body)
 }
