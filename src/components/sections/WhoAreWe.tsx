@@ -6,18 +6,15 @@ import { motion } from "framer-motion"
 const team = [
   {
     name: "Nihal Mishra",
-    role: "President",
     note: "National Level Hackathon Winner",
   },
   {
     name: "Hemant Thakur",
-    role: "Vice President",
     note: "National Level Hackathon Winner",
   },
   {
     name: "Siddhesh Gangurde",
-    role: "Technical Head",
-    note: "",
+    note: "Experienced various Hackathons",
   },
 ]
 
@@ -49,7 +46,6 @@ function WhoAreWe() {
                 Identity Card
               </div>
               <div className="mt-4 text-lg font-orbitron text-white">{member.name}</div>
-              <div className="mt-2 text-sm text-white/70">{member.role}</div>
               {member.note && (
                 <div className="mt-3 text-xs uppercase tracking-[0.2em] text-neonGreen/60">
                   {member.note}

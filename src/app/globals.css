@@ -8,6 +8,13 @@
   --glass: rgba(4, 10, 5, 0.78);
 }
 
+@media (max-width: 640px) {
+  :root {
+    --neon-green: #33ff55;
+    --neon-blue: #33f0ff;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -733,6 +740,20 @@ textarea {
 
 .terminal-bg-text {
   animation: hackerFlicker 6.6s infinite;
+}
+
+.hero-fade {
+  animation: heroFade 6s ease-in-out infinite;
+}
+
+@keyframes heroFade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
 }
 
 .btn,

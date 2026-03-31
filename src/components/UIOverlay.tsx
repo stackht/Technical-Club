@@ -274,7 +274,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
             className="terminal-hero-text pointer-events-none absolute inset-0 flex items-center justify-start"
             style={{ opacity: hideHeroText ? 0 : 1 }}
           >
-            <div className="terminal-bg-text w-full text-left font-orbitron font-bold uppercase leading-none text-[#d7ddd7]/28 drop-shadow-[0_0_50px_rgba(180,190,180,0.2)]">
+            <div className="terminal-bg-text hero-fade w-full text-left font-orbitron font-bold uppercase leading-none text-[#d7ddd7]/28 drop-shadow-[0_0_50px_rgba(180,190,180,0.2)]">
                 <span className="inline-block origin-left scale-x-[0.8] scale-y-[0.75] tracking-[0.16em]">
                   TECHNICAL
                 </span>{" "}
@@ -292,7 +292,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="terminal-hero-title text-balance font-cinzel text-4xl text-[#dfe9d9] drop-shadow-[0_0_18px_rgba(170,220,170,0.35)] sm:text-6xl md:text-7xl"
+                className="terminal-hero-title hero-fade text-balance font-cinzel text-4xl text-[#dfe9d9] drop-shadow-[0_0_18px_rgba(170,220,170,0.35)] sm:text-6xl md:text-7xl"
               >
                 <span className="glitch flicker-text" data-text={typed}>
                   {typed}

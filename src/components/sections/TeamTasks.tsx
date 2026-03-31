@@ -22,7 +22,7 @@ function TeamTasks() {
       ref={sectionRef}
       className="terminal-section relative px-6 py-24 section-3d"
     >
-      <div className="mx-auto flex max-w-6xl flex-col items-start gap-10 lg:flex-row lg:items-center lg:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col items-center gap-10 lg:flex-row lg:items-center lg:justify-between">
         <div>
         <motion.h2
           initial={{ opacity: 0, y: 20 }}
@@ -39,7 +39,7 @@ function TeamTasks() {
           </p>
         </div>
 
-        <div className="relative flex justify-center">
+        <div className="relative flex w-full justify-center lg:w-auto">
           <div className="cube">
             {faces.map((face) => (
               <div
