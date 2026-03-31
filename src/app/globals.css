@@ -520,6 +520,15 @@ textarea {
   animation: hackerFlicker 5s infinite;
 }
 
+.terminal-title::before,
+.terminal-title::after {
+  content: "--------------------";
+  color: rgba(0, 255, 0, 0.45);
+  font-weight: 400;
+  font-size: 0.7em;
+  letter-spacing: 0.1em;
+}
+
 .terminal-title.terminal-title-plain {
   justify-content: center;
   text-align: center;
