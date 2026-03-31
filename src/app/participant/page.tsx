@@ -108,8 +108,18 @@ export default function ChallengesPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="terminal-title font-orbitron text-3xl text-neonGreen">
-          Cmd User Shell
+        <div className="flex items-center justify-between">
+          <div className="terminal-title font-orbitron text-3xl text-neonGreen">
+            Cmd User Shell
+          </div>
+          <div className="flex items-center gap-3">
+            <Button type="button" variant="ghost" onClick={() => router.push("/")}>
+              Back
+            </Button>
+            <Button type="button" variant="ghost" onClick={() => router.push("/participant/profile")}>
+              Profile
+            </Button>
+          </div>
         </div>
         <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
           <div className="terminal-tabs mb-6 inline-flex items-center gap-4">
@@ -118,7 +128,19 @@ export default function ChallengesPage() {
               className={`terminal-tab ${activeTab === "shell" ? "terminal-tab-active" : ""}`}
               onClick={() => setActiveTab("shell")}
             >
-              Problem Shell
+              Challenge Shell
+            </button>
+            <button
+              type="button"
+              className={`terminal-tab ${activeTab === "accepted" ? "terminal-tab-active" : ""} ${
+                activeChallenge ? "" : "opacity-40"
+              }`}
+              onClick={() => {
+                if (!activeChallenge) return
+                setActiveTab("accepted")
+              }}
+            >
+              Accepted Challenge
             </button>
             <button
               type="button"
@@ -127,15 +149,6 @@ export default function ChallengesPage() {
             >
               Announcement
             </button>
-            {activeChallenge && (
-              <button
-                type="button"
-                className={`terminal-tab ${activeTab === "accepted" ? "terminal-tab-active" : ""}`}
-                onClick={() => setActiveTab("accepted")}
-              >
-                Accepted Challenge
-              </button>
-            )}
           </div>
 
           {activeTab === "announcement" && (

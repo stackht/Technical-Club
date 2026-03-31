@@ -130,7 +130,7 @@ export default function FormSection() {
       dispatch(setStatus("success"))
       setStep("done")
       setMessage("Registration complete. You are now logged in.")
-      router.push("/challenges")
+      router.push("/participant")
       dispatch(resetForm())
     } catch (error: any) {
       dispatch(setStatus("error"))
@@ -158,7 +158,7 @@ export default function FormSection() {
       }
       dispatch(setStatus("success"))
       setMessage("Access granted.")
-      router.push("/challenges")
+      router.push("/participant")
     } catch (error: any) {
       dispatch(setStatus("error"))
       setMessage(error.name === "AbortError" ? "Request timed out." : error.message || "Login failed.")
