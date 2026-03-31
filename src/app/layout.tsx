@@ -4,6 +4,7 @@ import "./globals.css"
 import ReduxProvider from "../components/providers/ReduxProvider"
 import PreloadModels from "../components/PreloadModels"
 import ConsoleSilencer from "../components/ConsoleSilencer"
+import PerformanceBoot from "../components/PerformanceBoot"
 
 const orbitron = Orbitron({
   variable: "--font-orbitron",
@@ -41,6 +42,7 @@ export default function RootLayout({
       <body className="min-h-full bg-ink text-white">
         <ReduxProvider>
           <ConsoleSilencer />
+          <PerformanceBoot />
           <PreloadModels />
           {children}
         </ReduxProvider>

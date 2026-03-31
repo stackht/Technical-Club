@@ -62,6 +62,21 @@ body.is-scrolling .cursor-glow {
   opacity: 0.2;
 }
 
+body.is-initial-load .glitch::before,
+body.is-initial-load .glitch::after,
+body.is-initial-load .flicker-text,
+body.is-initial-load .flicker-cursor,
+body.is-initial-load .hacker-flicker,
+body.is-initial-load .btn::after,
+body.is-initial-load .glass-panel::after,
+body.is-initial-load .terminal-tabs::after {
+  animation-play-state: paused !important;
+}
+
+body.is-initial-load .cursor-glow {
+  opacity: 0.15;
+}
+
 body.text-white {
   color: var(--foreground);
 }
