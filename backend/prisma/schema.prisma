@@ -46,6 +46,7 @@ model UserChallenge {
   statementId Int
   statement String
   createdAt  DateTime @default(now())
+  releasedAt DateTime?
 
   user User @relation(fields: [userId], references: [id])
 

@@ -19,6 +19,12 @@ export default function ChallengesPage() {
   const router = useRouter()
   const [submitting, setSubmitting] = useState(false)
   const [message, setMessage] = useState("")
+  const [activeTab, setActiveTab] = useState<"shell" | "accepted">("shell")
+  const [activeChallenge, setActiveChallenge] = useState<{
+    id: string
+    statementId: number
+    statement: string
+  } | null>(null)
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
   useEffect(() => {
@@ -27,6 +33,22 @@ export default function ChallengesPage() {
       router.replace("/")
     }
   }, [router])
+
+  useEffect(() => {
+    const token = localStorage.getItem("cmd_token")
+    if (!token) return
+    const load = async () => {
+      const response = await fetch(`${apiBase}/challenges/current`, {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await response.json()
+      if (response.ok && data.challenge) {
+        setActiveChallenge(data.challenge)
+        setActiveTab("accepted")
+      }
+    }
+    load()
+  }, [apiBase])
 
   const submitChallenge = async (statementId: number, statement: string) => {
     const token = localStorage.getItem("cmd_token")
@@ -43,11 +65,38 @@ export default function ChallengesPage() {
         body: JSON.stringify({ statementId, statement }),
       })
       const data = await response.json()
+      if (data?.activeChallenge) {
+        setActiveChallenge(data.activeChallenge)
+        setActiveTab("accepted")
+      }
       if (!response.ok) throw new Error(data.message || "Submit failed.")
+      setActiveChallenge({ id: "active", statementId, statement })
+      setActiveTab("accepted")
       setMessage("Sealed. Your challenge has been recorded.")
-      setTimeout(() => router.push("/"), 1200)
     } catch (error: any) {
       setMessage(error.message || "Submit failed.")
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  const releaseChallenge = async () => {
+    const token = localStorage.getItem("cmd_token")
+    if (!token) return
+    setSubmitting(true)
+    setMessage("")
+    try {
+      const response = await fetch(`${apiBase}/challenges/release`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      })
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.message || "Release failed.")
+      setActiveChallenge(null)
+      setActiveTab("shell")
+      setMessage("Challenge released.")
+    } catch (error: any) {
+      setMessage(error.message || "Release failed.")
     } finally {
       setSubmitting(false)
     }
@@ -63,31 +112,76 @@ export default function ChallengesPage() {
           Cmd Problem Shell
         </div>
         <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
-          <div className="mb-4 text-xs uppercase tracking-[0.35em] text-white/70">
-            Select and Seal One Problem
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            {challenges.map((item, index) => (
-              <div
-                key={item}
-                className="rounded-lg border border-white/10 bg-black/60 p-4 shadow-inner shadow-black/60"
+          <div className="terminal-tabs mb-6 inline-flex items-center gap-4">
+            <button
+              type="button"
+              className={`terminal-tab ${activeTab === "shell" ? "terminal-tab-active" : ""}`}
+              onClick={() => setActiveTab("shell")}
+            >
+              Problem Shell
+            </button>
+            {activeChallenge && (
+              <button
+                type="button"
+                className={`terminal-tab ${activeTab === "accepted" ? "terminal-tab-active" : ""}`}
+                onClick={() => setActiveTab("accepted")}
               >
-                <div className="text-xs uppercase tracking-[0.2em] text-neonGreen/70">
-                  Problem {index + 1}
-                </div>
-                <div className="mt-2 text-sm text-white/80">{item}</div>
-                <div className="mt-4 flex justify-end">
-                  <Button
-                    className="min-w-[140px]"
-                    onClick={() => submitChallenge(index + 1, item)}
-                    disabled={submitting}
-                  >
-                    {submitting ? "Sealing..." : "Seal"}
-                  </Button>
-                </div>
-              </div>
-            ))}
+                Accepted Challenge
+              </button>
+            )}
           </div>
+
+          {activeTab === "shell" && (
+            <>
+              <div className="mb-4 text-xs uppercase tracking-[0.35em] text-white/70">
+                Select and Seal One Problem
+              </div>
+              <div className="grid gap-4 md:grid-cols-2">
+                {challenges.map((item, index) => (
+                  <div
+                    key={item}
+                    className="rounded-lg border border-white/10 bg-black/60 p-4 shadow-inner shadow-black/60"
+                  >
+                    <div className="text-xs uppercase tracking-[0.2em] text-neonGreen/70">
+                      Problem {index + 1}
+                    </div>
+                    <div className="mt-2 text-sm text-white/80">{item}</div>
+                    <div className="mt-4 flex justify-end">
+                      <Button
+                        className="min-w-[140px]"
+                        onClick={() => submitChallenge(index + 1, item)}
+                        disabled={submitting || !!activeChallenge}
+                      >
+                        {submitting ? "Sealing..." : activeChallenge ? "Sealed" : "Seal"}
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {activeTab === "accepted" && activeChallenge && (
+            <div className="rounded-lg border border-neonGreen/40 bg-black/70 p-6 shadow-inner shadow-black/70">
+              <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/70">
+                Accepted Challenge
+              </div>
+              <div className="mt-3 text-sm text-white/80">
+                <span className="text-neonGreen/80">Problem #{activeChallenge.statementId}</span>
+              </div>
+              <div className="mt-3 text-sm text-white/80">{activeChallenge.statement}</div>
+              <div className="mt-6 flex justify-end">
+                <Button
+                  className="min-w-[140px]"
+                  onClick={releaseChallenge}
+                  disabled={submitting}
+                >
+                  {submitting ? "Releasing..." : "Release"}
+                </Button>
+              </div>
+            </div>
+          )}
+
           {message && (
             <div className="mt-4 text-xs uppercase tracking-[0.28em] text-neonGreen/80">
               {message}

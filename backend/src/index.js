@@ -557,12 +557,73 @@ app.post("/challenges/submit", authRequired, async (req, res) => {
   try {
     const data = challengeSchema.parse(req.body)
     const userId = req.userId
+    const active = await prisma.userChallenge.findFirst({
+      where: {
+        userId,
+        releasedAt: null,
+      },
+      orderBy: { createdAt: "desc" },
+    })
+    if (active) {
+      return res.status(409).json({
+        ok: false,
+        message: "You can seal only one problem at a time.",
+        activeChallenge: {
+          id: active.id,
+          statementId: active.statementId,
+          statement: active.statement,
+        },
+      })
+    }
     await prisma.userChallenge.create({
       data: {
         userId,
         statementId: data.statementId,
         statement: data.statement,
       },
+    })
+    return res.json({ ok: true })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.get("/challenges/current", authRequired, async (req, res) => {
+  try {
+    const userId = req.userId
+    const active = await prisma.userChallenge.findFirst({
+      where: { userId, releasedAt: null },
+      orderBy: { createdAt: "desc" },
+    })
+    if (!active) {
+      return res.json({ ok: true, challenge: null })
+    }
+    return res.json({
+      ok: true,
+      challenge: {
+        id: active.id,
+        statementId: active.statementId,
+        statement: active.statement,
+      },
+    })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.post("/challenges/release", authRequired, async (req, res) => {
+  try {
+    const userId = req.userId
+    const active = await prisma.userChallenge.findFirst({
+      where: { userId, releasedAt: null },
+      orderBy: { createdAt: "desc" },
+    })
+    if (!active) {
+      return res.status(400).json({ ok: false, message: "No active challenge." })
+    }
+    await prisma.userChallenge.update({
+      where: { id: active.id },
+      data: { releasedAt: new Date() },
     })
     return res.json({ ok: true })
   } catch (error) {

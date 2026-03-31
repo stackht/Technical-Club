@@ -258,7 +258,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
         }}
         className="pointer-events-none fixed inset-0 z-[60] flex flex-col justify-center px-6"
       >
-        {variant === "centered" && (
+        {variant === "centered" && !hideHeroText && (
           <>
             <div className="header-shield" />
           <motion.div
@@ -280,32 +280,30 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
 
         <div className="terminal-content-layer pointer-events-none mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-[1fr_0.7fr]">
           <div className="flex flex-col gap-8 lg:pr-24 mt-[6vh] sm:mt-[8vh] lg:mt-[10vh]" style={{ opacity: heroOpacity }}>
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{
-              opacity: hideHeroText ? 0 : 1,
-              y: hideHeroText ? -20 : 0,
-            }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="terminal-hero-title text-balance font-cinzel text-4xl text-[#dfe9d9] drop-shadow-[0_0_18px_rgba(170,220,170,0.35)] sm:text-6xl md:text-7xl"
-          >
-            <span className="glitch flicker-text" data-text={typed}>
-              {typed}
-            </span>
-            <span className="ml-2 flicker-cursor text-neonGreen">▍</span>
-          </motion.h1>
+          {!hideHeroText && (
+            <>
+              <motion.h1
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="terminal-hero-title text-balance font-cinzel text-4xl text-[#dfe9d9] drop-shadow-[0_0_18px_rgba(170,220,170,0.35)] sm:text-6xl md:text-7xl"
+              >
+                <span className="glitch flicker-text" data-text={typed}>
+                  {typed}
+                </span>
+                <span className="ml-2 flicker-cursor text-neonGreen">▍</span>
+              </motion.h1>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{
-                opacity: hideHeroText ? 0 : 1,
-                y: hideHeroText ? -10 : 0,
-              }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="pointer-events-none flex flex-wrap items-center gap-5"
-            >
-              <div ref={ctaAnchorRef} className="h-12 min-w-[220px]" />
-            </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="pointer-events-none flex flex-wrap items-center gap-5"
+              >
+                <div ref={ctaAnchorRef} className="h-12 min-w-[220px]" />
+              </motion.div>
+            </>
+          )}
           </div>
 
           <div className="hidden lg:flex flex-col items-end justify-end gap-4 text-right">
