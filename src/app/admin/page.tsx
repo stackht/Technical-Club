@@ -113,8 +113,13 @@ export default function AdminPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="terminal-title font-orbitron text-3xl text-neonGreen">
-          Cmd Admin
+        <div className="flex items-center justify-between">
+          <div className="terminal-title font-orbitron text-3xl text-neonGreen">
+            Cmd Admin
+          </div>
+          <Button type="button" variant="ghost" onClick={() => router.push("/")}>
+            Back
+          </Button>
         </div>
         <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-8 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
           <div className="text-xs uppercase tracking-[0.35em] text-white/70">
