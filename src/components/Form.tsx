@@ -168,7 +168,7 @@ export default function FormSection() {
   return (
     <section
       id="participate"
-      className="terminal-section relative px-6 py-24 section-3d"
+      className="terminal-section relative px-4 py-20 section-3d sm:px-6 sm:py-24"
     >
       <div className="mx-auto max-w-6xl">
         <motion.h2
@@ -201,9 +201,9 @@ export default function FormSection() {
               submitCredentials()
             }
           }}
-          className="glass-panel relative z-[9999] mt-10 max-w-3xl space-y-6 rounded-3xl p-8"
+          className="glass-panel relative z-[9999] mt-10 max-w-3xl space-y-6 rounded-3xl p-5 sm:p-8"
         >
-          <div className="terminal-tabs inline-flex items-center gap-4">
+          <div className="terminal-tabs inline-flex flex-wrap items-center gap-3">
             <button
               type="button"
               className={`terminal-tab ${mode === "register" ? "terminal-tab-active" : ""}`}
@@ -429,8 +429,8 @@ export default function FormSection() {
             </div>
           )}
 
-          <div className="flex flex-wrap items-center gap-4">
-            <Button ref={buttonRef} type="submit" className="min-w-[220px]">
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+            <Button ref={buttonRef} type="submit" className="w-full min-w-[220px] sm:w-auto">
               {status === "loading" && (
                 <span className="absolute right-4 h-3 w-3 animate-ping rounded-sm bg-neonGreen/80" />
               )}

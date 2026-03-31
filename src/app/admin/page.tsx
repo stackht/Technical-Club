@@ -278,16 +278,16 @@ export default function AdminPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="sticky top-0 z-30 -mx-6 flex items-center justify-between bg-[#050805]/95 px-6 py-3 backdrop-blur">
-          <div className="terminal-title font-orbitron text-3xl text-neonGreen">
+        <div className="sticky top-0 z-30 -mx-6 flex flex-col gap-3 bg-[#050805]/95 px-6 py-3 backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+          <div className="terminal-title font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
             Cmd Admin
           </div>
-          <Button type="button" variant="ghost" onClick={() => router.push("/")}>
+          <Button type="button" variant="ghost" onClick={() => router.push("/")} className="w-full sm:w-auto">
             Back
           </Button>
         </div>
         <div className="glass-panel mt-6 rounded-xl border border-neonGreen/40 bg-[#050805] p-8 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
-          <div className="terminal-tabs mb-6 inline-flex items-center gap-4">
+          <div className="terminal-tabs mb-6 inline-flex flex-wrap items-center gap-3">
             <button
               type="button"
               className={`terminal-tab ${activeTab === "participants" ? "terminal-tab-active" : ""}`}
@@ -394,7 +394,104 @@ export default function AdminPage() {
                   </select>
                 </label>
               </div>
-              <table className="w-full min-w-[920px] border-separate border-spacing-y-3 text-sm text-white/80">
+              <div className="space-y-4 lg:hidden">
+                {groupedRows.map((group) => (
+                  <Fragment key={`${group.year}-${group.branch}-cards`}>
+                    <div className="rounded-md border border-neonGreen/30 bg-black/60 px-4 py-2 text-xs uppercase tracking-[0.28em] text-neonGreen/70">
+                      {group.year} / {group.branch}
+                    </div>
+                    {group.items.map((participant) => (
+                      <div key={participant.id} className="rounded-lg border border-white/10 bg-black/50 p-4">
+                        <div className="text-sm text-white/90">{participant.name}</div>
+                        <div className="mt-1 text-xs text-white/60">{participant.email}</div>
+                        <div className="mt-1 text-xs text-white/60">{participant.phone}</div>
+                        <div className="mt-2 text-xs text-neonGreen/70">
+                          {participant.year} / {participant.branch}
+                        </div>
+                        <div className="mt-2 text-xs text-white/70">
+                          Sealed: {participant.statementId ? `#${participant.statementId}` : "—"}
+                        </div>
+                        <div className="mt-2 flex items-center gap-2 text-xs text-white/70">
+                          Doc:
+                          {participant.hasUpload ? (
+                            <button
+                              type="button"
+                              className="text-neonGreen/80 hover:text-neonGreen"
+                              onClick={() => downloadUpload(participant.id)}
+                              aria-label="Download upload"
+                            >
+                              ⬇
+                            </button>
+                          ) : (
+                            "—"
+                          )}
+                        </div>
+                        <div className="mt-3 grid grid-cols-3 gap-2">
+                          <Input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={participant.scores.s}
+                            onChange={(event) =>
+                              updateScore(participant.id, "s", event.target.value)
+                            }
+                            className="h-9 bg-black/60 text-xs"
+                            placeholder="S"
+                          />
+                          <Input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={participant.scores.p}
+                            onChange={(event) =>
+                              updateScore(participant.id, "p", event.target.value)
+                            }
+                            className="h-9 bg-black/60 text-xs"
+                            placeholder="P"
+                          />
+                          <Input
+                            type="number"
+                            min={0}
+                            max={100}
+                            value={participant.scores.d}
+                            onChange={(event) =>
+                              updateScore(participant.id, "d", event.target.value)
+                            }
+                            className="h-9 bg-black/60 text-xs"
+                            placeholder="D"
+                          />
+                        </div>
+                        <div className="mt-3 text-xs text-white/70">
+                          Status: {participant.reviewStatus}
+                        </div>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <Button
+                            type="button"
+                            className="px-4 py-2"
+                            onClick={() => submitReview(participant.id, "APPROVED")}
+                          >
+                            Approve
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            className="px-4 py-2"
+                            onClick={() => submitReview(participant.id, "REJECTED")}
+                          >
+                            Reject
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </Fragment>
+                ))}
+                {groupedRows.length === 0 && (
+                  <div className="rounded-md border border-white/10 bg-black/40 px-4 py-6 text-center text-white/50">
+                    No participants yet.
+                  </div>
+                )}
+              </div>
+              <table className="hidden w-full min-w-[920px] border-separate border-spacing-y-3 text-sm text-white/80 lg:table">
               <thead className="text-left text-xs uppercase tracking-[0.25em] text-white/50">
                 <tr>
                   <th className="py-2 pr-4">Name</th>

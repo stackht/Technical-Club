@@ -143,26 +143,26 @@ export default function ChallengesPage() {
   }
 
   return (
-    <main className="hero-bg relative h-screen overflow-y-auto px-6 py-0 text-white/80">
+    <main className="hero-bg relative h-screen overflow-y-auto px-4 py-0 text-white/80 sm:px-6">
       <div className="noise-overlay absolute inset-0 opacity-25" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="sticky top-0 z-30 -mx-6 flex items-center justify-between bg-[#050805]/95 px-6 py-3 backdrop-blur">
-          <div className="terminal-title font-orbitron text-3xl text-neonGreen">
+        <div className="sticky top-0 z-30 -mx-4 flex flex-col gap-3 bg-[#050805]/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="terminal-title font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
             Cmd User Shell
           </div>
-          <div className="flex items-center gap-3">
-            <Button type="button" variant="ghost" onClick={() => router.push("/")}>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <Button type="button" variant="ghost" onClick={() => router.push("/")} className="w-full sm:w-auto">
               Back
             </Button>
-            <Button type="button" variant="ghost" onClick={() => router.push("/participant/profile")}>
+            <Button type="button" variant="ghost" onClick={() => router.push("/participant/profile")} className="w-full sm:w-auto">
               Profile
             </Button>
           </div>
         </div>
-        <div className="glass-panel mt-6 rounded-xl border border-neonGreen/40 bg-[#050805] p-6 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
-          <div className="terminal-tabs mb-6 inline-flex items-center gap-4">
+        <div className="glass-panel mt-6 rounded-xl border border-neonGreen/40 bg-[#050805] p-5 shadow-[0_0_35px_rgba(0,255,0,0.2)] sm:p-6">
+          <div className="terminal-tabs mb-6 inline-flex flex-wrap items-center gap-3">
             <button
               type="button"
               className={`terminal-tab ${activeTab === "shell" ? "terminal-tab-active" : ""}`}
