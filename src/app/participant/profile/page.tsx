@@ -45,13 +45,13 @@ export default function ParticipantProfilePage() {
   if (!ready) return null
 
   return (
-    <main className="hero-bg relative min-h-screen px-4 py-16 text-white/80 sm:px-6 sm:py-20">
+    <main className="hero-bg relative h-screen overflow-y-auto px-4 py-0 text-white/80 sm:px-6">
       <div className="noise-overlay absolute inset-0 opacity-25" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-4xl space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="terminal-title font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
+        <div className="sticky top-0 z-30 -mx-4 flex flex-col gap-3 bg-[#050805]/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div className="terminal-title whitespace-nowrap font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
             Cmd Profile Shell
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
@@ -71,7 +71,7 @@ export default function ParticipantProfilePage() {
             </Button>
           </div>
         </div>
-        <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-5 shadow-[0_0_35px_rgba(0,255,0,0.2)] sm:p-8">
+        <div className="glass-panel mt-6 rounded-xl border border-neonGreen/40 bg-[#050805] p-5 shadow-[0_0_35px_rgba(0,255,0,0.2)] sm:p-8">
           <div className="text-xs uppercase tracking-[0.35em] text-white/70">
             Participant Profile
           </div>

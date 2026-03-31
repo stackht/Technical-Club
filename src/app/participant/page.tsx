@@ -149,7 +149,7 @@ export default function ChallengesPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
         <div className="sticky top-0 z-30 -mx-4 flex flex-col gap-3 bg-[#050805]/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="terminal-title font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
+          <div className="terminal-title whitespace-nowrap font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
             Cmd User Shell
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">

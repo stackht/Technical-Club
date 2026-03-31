@@ -42,7 +42,7 @@ export default function AdminLoginPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-3xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="terminal-title font-orbitron text-3xl text-neonGreen">
+          <div className="terminal-title whitespace-nowrap font-orbitron text-3xl text-neonGreen">
             Admin Login
           </div>
           <Button type="button" variant="ghost" onClick={() => router.push("/")}>
