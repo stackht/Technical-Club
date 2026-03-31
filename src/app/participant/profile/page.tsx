@@ -54,9 +54,21 @@ export default function ParticipantProfilePage() {
           <div className="terminal-title font-orbitron text-3xl text-neonGreen">
             Cmd Profile Shell
           </div>
-          <Button type="button" variant="ghost" onClick={() => router.push("/participant")}>
-            Back
-          </Button>
+          <div className="flex items-center gap-3">
+            <Button type="button" variant="ghost" onClick={() => router.push("/participant")}>
+              Back
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                localStorage.removeItem("cmd_token")
+                router.replace("/")
+              }}
+            >
+              Logout
+            </Button>
+          </div>
         </div>
         <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-8 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
           <div className="text-xs uppercase tracking-[0.35em] text-white/70">

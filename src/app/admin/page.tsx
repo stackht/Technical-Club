@@ -66,8 +66,8 @@ export default function AdminPage() {
     const load = async () => {
       const response = await fetch(`${apiBase}/announcement`)
       const data = await response.json()
-      if (response.ok) {
-        setAnnouncement(data.announcement || "")
+      if (response.ok && data.announcements?.length) {
+        setAnnouncement(data.announcements[0])
       }
     }
     load()
@@ -167,7 +167,7 @@ export default function AdminPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="sticky top-0 z-20 -mx-2 flex items-center justify-between bg-[#050805]/90 px-2 py-2 backdrop-blur">
+        <div className="sticky top-0 z-30 -mx-6 flex items-center justify-between bg-[#050805]/95 px-6 py-3 backdrop-blur">
           <div className="terminal-title font-orbitron text-3xl text-neonGreen">
             Cmd Admin
           </div>

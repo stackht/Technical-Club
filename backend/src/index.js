@@ -522,10 +522,13 @@ app.get("/auth/me", authRequired, async (req, res) => {
 
 app.get("/announcement", async (req, res) => {
   try {
-    const announcement = await prisma.announcement.findFirst({
+    const announcements = await prisma.announcement.findMany({
       orderBy: { updatedAt: "desc" },
     })
-    return res.json({ ok: true, announcement: announcement?.content || "" })
+    return res.json({
+      ok: true,
+      announcements: announcements.map((item) => item.content),
+    })
   } catch (error) {
     return res.status(400).json({ ok: false, message: error.message })
   }
@@ -627,16 +630,6 @@ app.get("/admin/participants/:id/upload", adminRequired, async (req, res) => {
 app.post("/admin/announcement", adminRequired, async (req, res) => {
   try {
     const data = announcementSchema.parse(req.body)
-    const existing = await prisma.announcement.findFirst({
-      orderBy: { updatedAt: "desc" },
-    })
-    if (existing) {
-      const updated = await prisma.announcement.update({
-        where: { id: existing.id },
-        data: { content: data.content },
-      })
-      return res.json({ ok: true, announcement: updated.content })
-    }
     const created = await prisma.announcement.create({
       data: { content: data.content },
     })

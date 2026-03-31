@@ -26,7 +26,7 @@ export default function ChallengesPage() {
     statementId: number
     statement: string
   } | null>(null)
-  const [announcement, setAnnouncement] = useState("")
+  const [announcements, setAnnouncements] = useState<string[]>([])
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
   useEffect(() => {
@@ -57,7 +57,7 @@ export default function ChallengesPage() {
       const response = await fetch(`${apiBase}/announcement`)
       const data = await response.json()
       if (response.ok) {
-        setAnnouncement(data.announcement || "")
+        setAnnouncements(data.announcements || [])
       }
     }
     load()
@@ -146,7 +146,7 @@ export default function ChallengesPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="sticky top-0 z-20 -mx-2 flex items-center justify-between bg-[#050805]/90 px-2 py-2 backdrop-blur">
+        <div className="sticky top-0 z-30 -mx-6 flex items-center justify-between bg-[#050805]/95 px-6 py-3 backdrop-blur">
           <div className="terminal-title font-orbitron text-3xl text-neonGreen">
             Cmd User Shell
           </div>
@@ -191,9 +191,17 @@ export default function ChallengesPage() {
               <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/70">
                 Interview Round Details
               </div>
-              {announcement && (
+              {announcements.map((item, index) => (
+                <div
+                  key={`${item}-${index}`}
+                  className="mt-3 rounded border border-neonGreen/30 bg-black/60 p-3 text-sm text-neonGreen/80"
+                >
+                  {item}
+                </div>
+              ))}
+              {!announcements.length && (
                 <div className="mt-3 rounded border border-neonGreen/30 bg-black/60 p-3 text-sm text-neonGreen/80">
-                  {announcement}
+                  Dates to be announced soon.
                 </div>
               )}
               <div className="mt-4 text-sm text-white/80">
