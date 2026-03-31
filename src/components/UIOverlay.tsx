@@ -224,7 +224,13 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
     <>
       {variant === "centered" && (
         <div className="terminal-header terminal-header-layer pointer-events-auto fixed left-0 right-0 top-6 mx-auto flex w-full max-w-6xl items-center justify-between text-xs uppercase tracking-[0.35em] text-white/60">
-          <div className="terminal-titlebar">Cmd</div>
+          <button
+            type="button"
+            className="terminal-titlebar cursor-pointer"
+            onClick={() => router.push("/admin/login")}
+          >
+            Cmd
+          </button>
           <div className="terminal-tabs flex items-center gap-4">
             {[
               { label: "Home", id: "hero-centered" },
