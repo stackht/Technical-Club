@@ -16,6 +16,7 @@ export default function AdminPage() {
       email: string
       phone: string
       statementId: number | null
+      hasUpload: boolean
       sScore: number | null
       pScore: number | null
       dScore: number | null
