@@ -66,6 +66,7 @@ const parseFrom = () => {
 }
 
 const requestOtpSchema = z.object({
+  name: z.string().min(2).max(80),
   email: z.string().email(),
   phone: z.string().min(6),
   year: z.enum(["FE", "SE", "TE", "BE"]),
@@ -97,6 +98,13 @@ const challengeSchema = z.object({
   statement: z.string().min(10).max(1000),
 })
 
+const reviewSchema = z.object({
+  sScore: z.number().int().min(0).max(100).nullable().optional(),
+  pScore: z.number().int().min(0).max(100).nullable().optional(),
+  dScore: z.number().int().min(0).max(100).nullable().optional(),
+  reviewStatus: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
+})
+
 function authRequired(req, res, next) {
   const header = req.headers.authorization || ""
   const token = header.startsWith("Bearer ") ? header.slice(7) : null
@@ -104,6 +112,21 @@ function authRequired(req, res, next) {
   try {
     const payload = jwt.verify(token, JWT_SECRET)
     req.userId = payload.sub
+    next()
+  } catch {
+    return res.status(401).json({ ok: false, message: "Unauthorized" })
+  }
+}
+
+function adminRequired(req, res, next) {
+  const header = req.headers.authorization || ""
+  const token = header.startsWith("Bearer ") ? header.slice(7) : null
+  if (!token) return res.status(401).json({ ok: false, message: "Unauthorized" })
+  try {
+    const payload = jwt.verify(token, JWT_SECRET)
+    if (payload?.role !== "admin") {
+      return res.status(403).json({ ok: false, message: "Forbidden" })
+    }
     next()
   } catch {
     return res.status(401).json({ ok: false, message: "Unauthorized" })
@@ -311,6 +334,7 @@ app.post("/auth/request-otp", async (req, res) => {
     const otpHash = await bcrypt.hash(otp, 10)
     await prisma.otpToken.create({
       data: {
+        name: data.name,
         email: data.email,
         otpHash,
         phone: data.phone,
@@ -402,6 +426,7 @@ app.post("/auth/register", async (req, res) => {
     const passwordHash = await bcrypt.hash(data.password, 12)
     await prisma.user.create({
       data: {
+        name: otpRecord.name,
         email: data.email,
         username: normalizedUsername,
         passwordHash,
@@ -476,6 +501,53 @@ app.post("/admin/login", async (req, res) => {
       expiresIn: "1d",
     })
     return res.json({ ok: true, token })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.get("/admin/participants", adminRequired, async (req, res) => {
+  try {
+    const users = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+      include: {
+        challenges: {
+          orderBy: { createdAt: "desc" },
+          take: 1,
+        },
+      },
+    })
+    const payload = users.map((user) => ({
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      phone: user.phone,
+      statementId: user.challenges?.[0]?.statementId ?? null,
+      sScore: user.sScore,
+      pScore: user.pScore,
+      dScore: user.dScore,
+      reviewStatus: user.reviewStatus,
+    }))
+    return res.json({ ok: true, participants: payload })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
+
+app.post("/admin/participants/:id/review", adminRequired, async (req, res) => {
+  try {
+    const data = reviewSchema.parse(req.body)
+    const userId = req.params.id
+    const update = {}
+    if (data.sScore !== undefined) update.sScore = data.sScore
+    if (data.pScore !== undefined) update.pScore = data.pScore
+    if (data.dScore !== undefined) update.dScore = data.dScore
+    if (data.reviewStatus) update.reviewStatus = data.reviewStatus
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: update,
+    })
+    return res.json({ ok: true, user: { id: user.id, reviewStatus: user.reviewStatus } })
   } catch (error) {
     return res.status(400).json({ ok: false, message: error.message })
   }

@@ -9,18 +9,24 @@ datasource db {
 
 model User {
   id           String   @id @default(cuid())
+  name         String
   email        String   @unique
   username     String   @unique
   passwordHash String
   phone        String
   year         String
   branch       String
+  sScore       Int?
+  pScore       Int?
+  dScore       Int?
+  reviewStatus String   @default("PENDING")
   createdAt    DateTime @default(now())
   challenges   UserChallenge[]
 }
 
 model OtpToken {
   id         String   @id @default(cuid())
+  name       String
   email      String
   otpHash    String
   phone      String

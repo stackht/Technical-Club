@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 
 export type FormState = {
+  name: string
   email: string
   phone: string
   year: string
@@ -12,6 +13,7 @@ export type FormState = {
 }
 
 const initialState: FormState = {
+  name: "",
   email: "",
   phone: "",
   year: "",
@@ -29,7 +31,15 @@ const formSlice = createSlice({
     updateField(
       state,
       action: PayloadAction<{
-        field: "email" | "phone" | "year" | "branch" | "otp" | "username" | "password"
+        field:
+          | "name"
+          | "email"
+          | "phone"
+          | "year"
+          | "branch"
+          | "otp"
+          | "username"
+          | "password"
         value: string
       }>,
     ) {
@@ -39,6 +49,7 @@ const formSlice = createSlice({
       state.status = action.payload
     },
     resetForm(state) {
+      state.name = ""
       state.email = ""
       state.phone = ""
       state.year = ""

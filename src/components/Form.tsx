@@ -13,7 +13,7 @@ import { Label } from "./ui/label"
 
 export default function FormSection() {
   const dispatch = useDispatch<AppDispatch>()
-  const { email, phone, year, branch, otp, username, password, status } = useSelector(
+  const { name, email, phone, year, branch, otp, username, password, status } = useSelector(
     (state: RootState) => state.form,
   )
   const buttonRef = useRef<HTMLButtonElement | null>(null)
@@ -48,7 +48,7 @@ export default function FormSection() {
       const response = await fetch(`${apiBase}/auth/request-otp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, phone, year, branch }),
+        body: JSON.stringify({ name, email, phone, year, branch }),
         signal: controller.signal,
       })
       clearTimeout(timeout)
@@ -165,6 +165,18 @@ export default function FormSection() {
           {step === "details" && (
             <>
               <div className="grid gap-6 md:grid-cols-2">
+                <div className="space-y-2 md:col-span-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    placeholder="Enter your full name"
+                    value={name}
+                    onChange={(event) =>
+                      dispatch(updateField({ field: "name", value: event.target.value }))
+                    }
+                    required
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Input
