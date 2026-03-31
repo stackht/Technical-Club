@@ -81,12 +81,24 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
         height: rect.height,
       })
     }
-    updateCta()
-    const raf = requestAnimationFrame(updateCta)
+    let rafId = 0
+    let tries = 0
+    const retry = () => {
+      updateCta()
+      tries += 1
+      if (tries < 12) {
+        rafId = requestAnimationFrame(retry)
+      }
+    }
+    retry()
     window.addEventListener("resize", updateCta)
+    const anchor = ctaAnchorRef.current
+    const observer = anchor ? new ResizeObserver(() => updateCta()) : null
+    if (anchor && observer) observer.observe(anchor)
     return () => {
-      cancelAnimationFrame(raf)
+      cancelAnimationFrame(rafId)
       window.removeEventListener("resize", updateCta)
+      if (observer && anchor) observer.unobserve(anchor)
     }
   }, [])
 
