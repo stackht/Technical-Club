@@ -50,9 +50,9 @@ export default function ParticipantProfilePage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-4xl space-y-6">
-        <div className="sticky top-0 z-30 w-screen -translate-x-1/2 overflow-x-hidden bg-[#050805]/95 py-3 backdrop-blur left-1/2">
+        <div className="sticky top-0 z-30 w-full overflow-x-hidden bg-[#050805]/95 py-3 backdrop-blur">
           <div className="mx-auto flex w-full max-w-4xl flex-wrap items-center justify-center gap-3 px-4 text-center sm:px-6">
-            <div className="terminal-title terminal-title-centered min-w-0 truncate whitespace-nowrap font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
+            <div className="terminal-title terminal-title-plain w-full min-w-0 truncate whitespace-nowrap font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
               Cmd Profile Shell
             </div>
             <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
