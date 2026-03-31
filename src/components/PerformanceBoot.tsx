@@ -15,7 +15,7 @@ export default function PerformanceBoot() {
     const idle: number =
       "requestIdleCallback" in window
         ? (window as any).requestIdleCallback(clear, { timeout: 2500 })
-        : window.setTimeout(clear, 2000)
+        : setTimeout(clear, 2000)
 
     return () => {
       clear()
