@@ -22,6 +22,7 @@ model User {
   reviewStatus String   @default("PENDING")
   createdAt    DateTime @default(now())
   challenges   UserChallenge[]
+  uploads      ChallengeUpload[]
 }
 
 model OtpToken {
