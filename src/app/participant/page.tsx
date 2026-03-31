@@ -273,7 +273,7 @@ export default function ChallengesPage() {
           )}
 
           {activeTab === "accepted" && activeChallenge && (
-            <div className="max-h-[70vh] overflow-y-auto rounded-lg border border-neonGreen/40 bg-black/70 p-6 shadow-inner shadow-black/70">
+            <div className="max-h-[70vh] overflow-y-auto rounded-lg border border-neonGreen/40 bg-black/70 p-6 pr-4 shadow-inner shadow-black/70 sm:max-h-[65vh]">
               <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/70">
                 Accepted Challenge
               </div>

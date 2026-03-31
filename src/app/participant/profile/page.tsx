@@ -45,22 +45,23 @@ export default function ParticipantProfilePage() {
   if (!ready) return null
 
   return (
-    <main className="hero-bg relative min-h-screen px-6 py-20 text-white/80">
+    <main className="hero-bg relative min-h-screen px-4 py-16 text-white/80 sm:px-6 sm:py-20">
       <div className="noise-overlay absolute inset-0 opacity-25" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-4xl space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="terminal-title font-orbitron text-3xl text-neonGreen">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="terminal-title font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
             Cmd Profile Shell
           </div>
-          <div className="flex items-center gap-3">
-            <Button type="button" variant="ghost" onClick={() => router.push("/participant")}>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+            <Button type="button" variant="ghost" onClick={() => router.push("/participant")} className="w-full sm:w-auto">
               Back
             </Button>
             <Button
               type="button"
               variant="ghost"
+              className="w-full sm:w-auto"
               onClick={() => {
                 localStorage.removeItem("cmd_token")
                 router.replace("/")
@@ -70,35 +71,29 @@ export default function ParticipantProfilePage() {
             </Button>
           </div>
         </div>
-        <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-8 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
+        <div className="glass-panel rounded-xl border border-neonGreen/40 bg-[#050805] p-5 shadow-[0_0_35px_rgba(0,255,0,0.2)] sm:p-8">
           <div className="text-xs uppercase tracking-[0.35em] text-white/70">
             Participant Profile
           </div>
-          <div className="mt-6 grid gap-4 text-sm text-white/80">
-            <div>
-              <span className="text-neonGreen/70">Name:</span>{" "}
-              {profile?.name || "—"}
-            </div>
-            <div>
-              <span className="text-neonGreen/70">Email:</span>{" "}
-              {profile?.email || "—"}
-            </div>
-            <div>
-              <span className="text-neonGreen/70">Username:</span>{" "}
-              {profile?.username || "—"}
-            </div>
-            <div>
-              <span className="text-neonGreen/70">Phone:</span>{" "}
-              {profile?.phone || "—"}
-            </div>
-            <div>
-              <span className="text-neonGreen/70">Year:</span>{" "}
-              {profile?.year || "—"}
-            </div>
-            <div>
-              <span className="text-neonGreen/70">Branch:</span>{" "}
-              {profile?.branch || "—"}
-            </div>
+          <div className="mt-6 grid gap-4 text-sm text-white/80 sm:grid-cols-2">
+            {[
+              { label: "Name", value: profile?.name || "—" },
+              { label: "Email", value: profile?.email || "—" },
+              { label: "Username", value: profile?.username || "—" },
+              { label: "Phone", value: profile?.phone || "—" },
+              { label: "Year", value: profile?.year || "—" },
+              { label: "Branch", value: profile?.branch || "—" },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="rounded-lg border border-white/10 bg-black/50 p-4"
+              >
+                <div className="text-xs uppercase tracking-[0.25em] text-neonGreen/70">
+                  {item.label}
+                </div>
+                <div className="mt-2 text-sm text-white/80">{item.value}</div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
