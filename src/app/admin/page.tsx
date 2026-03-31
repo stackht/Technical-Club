@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
@@ -26,6 +26,7 @@ export default function AdminPage() {
   const [scores, setScores] = useState<Record<string, { s: string; p: string; d: string }>>({})
   const [announcement, setAnnouncement] = useState("")
   const [savingAnnouncement, setSavingAnnouncement] = useState(false)
+  const prevScoresRef = useRef<Record<string, string>>({})
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
 
   useEffect(() => {
@@ -111,6 +112,45 @@ export default function AdminPage() {
       ),
     )
   }
+
+  useEffect(() => {
+    if (!ready) return
+    const token = localStorage.getItem("cmd_admin_token")
+    if (!token) return
+    const timeouts: Record<string, ReturnType<typeof setTimeout>> = {}
+    const saveScores = (id: string, payload: { sScore: number | null; pScore: number | null; dScore: number | null }) => {
+      const body = { ...payload }
+      fetch(`${apiBase}/admin/participants/${id}/review`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      }).catch(() => undefined)
+    }
+
+    for (const participant of participants) {
+      const current = scores[participant.id]
+      if (!current) continue
+      const snapshot = `${current.s}|${current.p}|${current.d}`
+      if (prevScoresRef.current[participant.id] === snapshot) continue
+      prevScoresRef.current[participant.id] = snapshot
+      const toNumber = (value: string) => (value === "" ? null : Number(value))
+      const payload = {
+        sScore: toNumber(current.s),
+        pScore: toNumber(current.p),
+        dScore: toNumber(current.d),
+      }
+      const key = participant.id
+      if (timeouts[key]) clearTimeout(timeouts[key])
+      timeouts[key] = setTimeout(() => saveScores(key, payload), 450)
+    }
+
+    return () => {
+      Object.values(timeouts).forEach((timeout) => clearTimeout(timeout))
+    }
+  }, [apiBase, participants, scores, ready])
 
   const downloadUpload = async (id: string) => {
     const token = localStorage.getItem("cmd_admin_token")

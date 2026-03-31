@@ -320,6 +320,78 @@ function buildConfirmEmail() {
   return { subject, text, html }
 }
 
+function buildDecisionEmail({ name, status }) {
+  const approved = status === "APPROVED"
+  const subject = approved
+    ? "CMD Interview Status — Access Granted"
+    : "CMD Interview Status — Access Restricted"
+  const text = [
+    "CMD // INTERVIEW STATUS",
+    "",
+    `Candidate: ${name || "Participant"}`,
+    `Status: ${approved ? "APPROVED" : "REJECTED"}`,
+    "",
+    approved
+      ? "Your signal is verified. You have cleared the CMD interview round."
+      : "Your signal did not meet the required thresholds this cycle.",
+    "",
+    "— CMD Decryptors",
+  ].join("\n")
+
+  const html = `
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8" />
+        <meta name="color-scheme" content="dark" />
+        <meta name="supported-color-schemes" content="dark" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      </head>
+      <body style="margin:0;padding:0;background:#050805;color:#e6f3e6;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#050805" style="background:#050805;">
+          <tr>
+            <td align="center" style="padding:24px;">
+              <table role="presentation" width="620" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:620px;background:#050805;color:#e6f3e6;">
+                <tr>
+                  <td style="font-family:'Courier New',monospace;">
+                    <div style="border:1px solid #1e2a1e;border-radius:12px;overflow:hidden;background:#0b120b;">
+                      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#0d160d;border-bottom:1px solid #1e2a1e;">
+                        <div style="font-size:12px; letter-spacing:0.35em; color:#a5f3a5; text-transform:uppercase;">CMD</div>
+                        <div style="display:flex;gap:6px;">
+                          <span style="width:8px;height:8px;border-radius:999px;background:#1f2a1f;"></span>
+                          <span style="width:8px;height:8px;border-radius:999px;background:#1f2a1f;"></span>
+                          <span style="width:8px;height:8px;border-radius:999px;background:#1f2a1f;"></span>
+                        </div>
+                      </div>
+                      <div style="padding:22px 22px 18px;color:#dff0df;background:#0a110a;">
+                        <div style="letter-spacing:0.35em;color:#7fe67f;font-size:12px;text-transform:uppercase;">CMD // Interview Status</div>
+                        <div style="margin:14px 0 6px;font-size:18px;">
+                          Status: <span style="color:${approved ? "#9dff9d" : "#ff9d9d"};">${approved ? "APPROVED" : "REJECTED"}</span>
+                        </div>
+                        <div style="opacity:0.85;line-height:1.7;">
+                          Candidate <strong>${name || "Participant"}</strong> —
+                          ${
+                            approved
+                              ? "your signal is verified. Access granted to the next CMD sequence."
+                              : "your signal did not meet the required thresholds this cycle."
+                          }
+                        </div>
+                        <div style="margin:18px 0 0;border-top:1px solid #1e2a1e;"></div>
+                        <div style="margin-top:10px;font-size:12px;opacity:0.7;">— CMD Decryptors</div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
+  `
+  return { subject, text, html }
+}
+
 app.get("/health", (req, res) => {
   res.json({ ok: true })
 })
@@ -600,6 +672,15 @@ app.post("/admin/participants/:id/review", adminRequired, async (req, res) => {
       where: { id: userId },
       data: update,
     })
+    if (data.reviewStatus) {
+      const email = buildDecisionEmail({ name: user.name, status: data.reviewStatus })
+      await sendMail({
+        to: user.email,
+        subject: email.subject,
+        text: email.text,
+        html: email.html,
+      })
+    }
     return res.json({ ok: true, user: { id: user.id, reviewStatus: user.reviewStatus } })
   } catch (error) {
     return res.status(400).json({ ok: false, message: error.message })
