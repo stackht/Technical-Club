@@ -25,23 +25,12 @@ export default function Home() {
   useEffect(() => {
     const scroller = scrollRef.current
     if (!scroller) return
-    const sections = Array.from(
-      scroller.querySelectorAll<HTMLElement>(".terminal-section"),
-    )
-    if (!sections.length) return
-
     let ticking = false
     let lastHide = false
     let timeout: ReturnType<typeof setTimeout> | null = null
 
     const updateActive = () => {
       ticking = false
-      const scrollerRect = scroller.getBoundingClientRect()
-      const centerY = scrollerRect.top + scrollerRect.height / 2
-      const header = document.querySelector(".terminal-header") as HTMLElement | null
-      const headerBottom = header ? header.getBoundingClientRect().bottom : scrollerRect.top
-      const headerHeight = header ? header.getBoundingClientRect().height : 0
-
       const top = scroller.scrollTop
       const shouldHide = top > 20
       if (shouldHide !== lastHide) {
@@ -49,10 +38,6 @@ export default function Home() {
         setHideHeroText(shouldHide)
       }
       rotateRef.current = top * 0.003
-
-      sections.forEach((section) => {
-        section.style.opacity = "1"
-      })
     }
 
     const onScroll = () => {
@@ -68,11 +53,9 @@ export default function Home() {
 
     updateActive()
     scroller.addEventListener("scroll", onScroll, { passive: true })
-    window.addEventListener("resize", updateActive)
     return () => {
       if (timeout) clearTimeout(timeout)
       scroller.removeEventListener("scroll", onScroll)
-      window.removeEventListener("resize", updateActive)
       document.body.classList.remove("is-scrolling")
     }
   }, [])
