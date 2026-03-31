@@ -39,7 +39,7 @@ function TeamTasks() {
           </p>
         </div>
 
-        <div className="relative flex w-full justify-center lg:w-auto">
+        <div className="relative flex w-full justify-center pt-6 lg:w-auto lg:pt-0">
           <div className="cube">
             {faces.map((face) => (
               <div

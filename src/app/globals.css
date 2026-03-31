@@ -10,8 +10,9 @@
 
 @media (max-width: 640px) {
   :root {
-    --neon-green: #33ff55;
-    --neon-blue: #33f0ff;
+    --neon-green: #5dff6b;
+    --neon-blue: #4cf7ff;
+    --foreground: #e9ffe9;
   }
 }
 
