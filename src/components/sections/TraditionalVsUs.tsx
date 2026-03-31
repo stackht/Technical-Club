@@ -49,7 +49,7 @@ function TraditionalVsUs() {
           >
             <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(182,255,0,0.1),transparent_60%)]" />
             <div className="absolute -right-10 top-10 h-32 w-32 rounded-sm bg-lime-400/20 blur-3xl" />
-            <h3 className="relative font-orbitron text-lg text-neonGreen">Branch Bliss</h3>
+            <h3 className="relative font-orbitron text-lg text-neonGreen">Code Medium</h3>
             <ul className="relative mt-4 space-y-3 text-sm text-white/80">
               <li>Dynamic startup-style sprints</li>
               <li>Neon-lit innovation labs</li>

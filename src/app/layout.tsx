@@ -24,8 +24,8 @@ const cinzel = Cinzel({
 })
 
 export const metadata: Metadata = {
-  title: "Branch Bliss | Technical Club",
-  description: "Branch Bliss: Build. Break. Innovate.",
+  title: "Code Medium | Technical Club",
+  description: "Code Medium: Build. Break. Innovate.",
 }
 
 export default function RootLayout({
