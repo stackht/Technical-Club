@@ -50,25 +50,7 @@ export default function Home() {
       rotateRef.current = top * 0.003
 
       sections.forEach((section) => {
-        if (section.id === "participate") {
-          section.style.opacity = "1"
-          return
-        }
-        const rect = section.getBoundingClientRect()
-        const sectionCenter = rect.top + rect.height / 2
-        if (rect.top <= headerBottom) {
-          const overlap = headerBottom - rect.top
-          const fadeRange = Math.max(headerHeight * 1.2, 1)
-          const progress = Math.min(Math.max(overlap / fadeRange, 0), 1)
-          const fade = Math.max(1 - progress, 0)
-          section.style.opacity = fade.toString()
-          return
-        }
-        if (sectionCenter < centerY) {
-          section.style.opacity = "0"
-        } else {
-          section.style.opacity = "1"
-        }
+        section.style.opacity = "1"
       })
     }
 
