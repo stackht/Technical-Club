@@ -278,13 +278,15 @@ export default function AdminPage() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(0,255,0,0.18),transparent_40%),radial-gradient(circle_at_80%_60%,rgba(0,229,255,0.12),transparent_45%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_100%,rgba(0,255,0,0.06),transparent_50%)]" />
       <div className="relative mx-auto max-w-6xl space-y-6">
-        <div className="sticky top-0 z-30 flex w-full flex-wrap items-center justify-between gap-3 overflow-x-hidden bg-[#050805]/95 px-4 py-3 backdrop-blur sm:px-6">
-          <div className="terminal-title min-w-0 truncate whitespace-nowrap font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
-            Cmd Admin
+        <div className="sticky top-0 z-30 w-full overflow-x-hidden bg-[#050805]/95 py-3 backdrop-blur">
+          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-center gap-3 px-4 text-center sm:px-6">
+            <div className="terminal-title min-w-0 truncate whitespace-nowrap font-orbitron text-xl text-neonGreen sm:text-2xl md:text-3xl">
+              Cmd Admin
+            </div>
+            <Button type="button" variant="ghost" onClick={() => router.push("/")} className="w-full sm:w-auto">
+              Back
+            </Button>
           </div>
-          <Button type="button" variant="ghost" onClick={() => router.push("/")} className="w-full sm:w-auto">
-            Back
-          </Button>
         </div>
         <div className="glass-panel mt-6 rounded-xl border border-neonGreen/40 bg-[#050805] p-8 shadow-[0_0_35px_rgba(0,255,0,0.2)]">
           <div className="terminal-tabs mb-6 inline-flex flex-wrap items-center gap-3">
