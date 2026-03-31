@@ -195,44 +195,72 @@ export default function FormSection() {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label htmlFor="year">Year</Label>
-                  <select
-                    id="year"
-                    className="h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white/80 shadow-inner shadow-black/60 outline-none transition focus:border-neonGreen/60 focus:ring-2 focus:ring-neonGreen/30"
-                    value={year}
-                    onChange={(event) =>
-                      dispatch(updateField({ field: "year", value: event.target.value }))
-                    }
-                    required
-                  >
-                    <option value="" disabled>
-                      Select year
-                    </option>
-                    <option value="FE">FE</option>
-                    <option value="SE">SE</option>
-                    <option value="TE">TE</option>
-                    <option value="BE">BE</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="year"
+                      className="h-12 w-full appearance-none rounded-lg border border-neonGreen/15 bg-black/50 px-4 pr-10 text-sm text-[#d8e6d8] shadow-inner shadow-black/70 outline-none transition focus:border-neonGreen/60 focus:ring-2 focus:ring-neonGreen/30"
+                      value={year}
+                      onChange={(event) =>
+                        dispatch(updateField({ field: "year", value: event.target.value }))
+                      }
+                      required
+                    >
+                      <option value="" disabled className="bg-[#0b140f] text-[#d8e6d8]">
+                        Select year
+                      </option>
+                      <option value="FE" className="bg-[#0b140f] text-[#d8e6d8]">
+                        FE
+                      </option>
+                      <option value="SE" className="bg-[#0b140f] text-[#d8e6d8]">
+                        SE
+                      </option>
+                      <option value="TE" className="bg-[#0b140f] text-[#d8e6d8]">
+                        TE
+                      </option>
+                      <option value="BE" className="bg-[#0b140f] text-[#d8e6d8]">
+                        BE
+                      </option>
+                    </select>
+                    <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-neonGreen/70">
+                      ▾
+                    </span>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="branch">Branch</Label>
-                  <select
-                    id="branch"
-                    className="h-12 w-full rounded-lg border border-white/10 bg-white/5 px-4 text-sm text-white/80 shadow-inner shadow-black/60 outline-none transition focus:border-neonGreen/60 focus:ring-2 focus:ring-neonGreen/30"
-                    value={branch}
-                    onChange={(event) =>
-                      dispatch(updateField({ field: "branch", value: event.target.value }))
-                    }
-                    required
-                  >
-                    <option value="" disabled>
-                      Select branch
-                    </option>
-                    <option value="AI&DS">AI&DS</option>
-                    <option value="AIML">AIML</option>
-                    <option value="IOT">IOT</option>
-                    <option value="COMP">COMP</option>
-                    <option value="MECH">MECH</option>
-                  </select>
+                  <div className="relative">
+                    <select
+                      id="branch"
+                      className="h-12 w-full appearance-none rounded-lg border border-neonGreen/15 bg-black/50 px-4 pr-10 text-sm text-[#d8e6d8] shadow-inner shadow-black/70 outline-none transition focus:border-neonGreen/60 focus:ring-2 focus:ring-neonGreen/30"
+                      value={branch}
+                      onChange={(event) =>
+                        dispatch(updateField({ field: "branch", value: event.target.value }))
+                      }
+                      required
+                    >
+                      <option value="" disabled className="bg-[#0b140f] text-[#d8e6d8]">
+                        Select branch
+                      </option>
+                      <option value="AI&DS" className="bg-[#0b140f] text-[#d8e6d8]">
+                        AI&DS
+                      </option>
+                      <option value="AIML" className="bg-[#0b140f] text-[#d8e6d8]">
+                        AIML
+                      </option>
+                      <option value="IOT" className="bg-[#0b140f] text-[#d8e6d8]">
+                        IOT
+                      </option>
+                      <option value="COMP" className="bg-[#0b140f] text-[#d8e6d8]">
+                        COMP
+                      </option>
+                      <option value="MECH" className="bg-[#0b140f] text-[#d8e6d8]">
+                        MECH
+                      </option>
+                    </select>
+                    <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-neonGreen/70">
+                      ▾
+                    </span>
+                  </div>
                 </div>
               </div>
             </>

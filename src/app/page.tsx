@@ -70,6 +70,7 @@ export default function Home() {
       lerp: 0.08,
       smoothWheel: true,
     })
+    ;(window as any).__lenis = lenis
     let rafId = 0
     const raf = (time: number) => {
       lenis.raf(time)
@@ -79,6 +80,9 @@ export default function Home() {
     return () => {
       cancelAnimationFrame(rafId)
       lenis.destroy()
+      if ((window as any).__lenis === lenis) {
+        delete (window as any).__lenis
+      }
     }
   }, [])
 

@@ -26,19 +26,32 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
   const overlayRef = useRef<HTMLDivElement | null>(null)
   const [springProps, api] = useSpring(() => ({ xy: [0, 0] }))
   const subtitleChars = useMemo(() => subtitleText.split(""), [])
-  const handleTabClick = (id: string) => {
-    setActiveId(id)
+  const scrollToSection = (id: string) => {
     const scroller = document.querySelector(".scroll-stage") as HTMLElement | null
     if (!scroller) return
     if (id === "hero-centered") {
-      scroller.scrollTo({ top: 0, behavior: "smooth" })
+      const lenis = (window as any).__lenis as { scrollTo?: (target: number, opts?: any) => void } | undefined
+      if (lenis?.scrollTo) {
+        lenis.scrollTo(0)
+      } else {
+        scroller.scrollTo({ top: 0, behavior: "smooth" })
+      }
       return
     }
     const target = document.getElementById(id)
     if (!target) return
     const targetCenter = target.offsetTop + target.offsetHeight / 2
-    const scrollTop = targetCenter - scroller.clientHeight / 2
-    scroller.scrollTo({ top: Math.max(scrollTop, 0), behavior: "smooth" })
+    const scrollTop = Math.max(targetCenter - scroller.clientHeight / 2, 0)
+    const lenis = (window as any).__lenis as { scrollTo?: (target: number, opts?: any) => void } | undefined
+    if (lenis?.scrollTo) {
+      lenis.scrollTo(scrollTop)
+      return
+    }
+    scroller.scrollTo({ top: scrollTop, behavior: "smooth" })
+  }
+  const handleTabClick = (id: string) => {
+    setActiveId(id)
+    scrollToSection(id)
   }
 
   useEffect(() => {
@@ -251,12 +264,7 @@ export default function UIOverlay({ variant, hideHeroText = false }: Props) {
                 target.style.setProperty("--ripple-y", `${y}px`)
               }}
               onClick={() => {
-                const scroller = document.querySelector(".scroll-stage") as HTMLElement | null
-                const target = document.getElementById("participate")
-                if (!target || !scroller) return
-                const targetCenter = target.offsetTop + target.offsetHeight / 2
-                const scrollTop = targetCenter - scroller.clientHeight / 2
-                scroller.scrollTo({ top: Math.max(scrollTop, 0), behavior: "smooth" })
+                scrollToSection("participate")
               }}
             >
               <span>Join Now</span>
