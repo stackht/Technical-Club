@@ -13,13 +13,23 @@ import { Label } from "./ui/label"
 
 export default function FormSection() {
   const dispatch = useDispatch<AppDispatch>()
-  const { name, email, phone, year, branch, otp, username, password, status } = useSelector(
+  const {
+    name,
+    email,
+    identifier,
+    phone,
+    year,
+    branch,
+    otp,
+    username,
+    password,
+    status,
+  } = useSelector(
     (state: RootState) => state.form,
   )
   const buttonRef = useRef<HTMLButtonElement | null>(null)
-  const [step, setStep] = useState<"details" | "otp" | "credentials" | "done">(
-    "details",
-  )
+  const [mode, setMode] = useState<"register" | "login">("register")
+  const [step, setStep] = useState<"details" | "otp" | "credentials" | "done">("details")
   const [message, setMessage] = useState("")
   const router = useRouter()
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
@@ -128,6 +138,33 @@ export default function FormSection() {
     }
   }
 
+  const submitLogin = async () => {
+    dispatch(setStatus("loading"))
+    setMessage("")
+    try {
+      const controller = new AbortController()
+      const timeout = setTimeout(() => controller.abort(), 15000)
+      const response = await fetch(`${apiBase}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier, password }),
+        signal: controller.signal,
+      })
+      clearTimeout(timeout)
+      const data = await response.json()
+      if (!response.ok) throw new Error(data.message || "Login failed.")
+      if (data.token) {
+        localStorage.setItem("cmd_token", data.token)
+      }
+      dispatch(setStatus("success"))
+      setMessage("Access granted.")
+      router.push("/challenges")
+    } catch (error: any) {
+      dispatch(setStatus("error"))
+      setMessage(error.name === "AbortError" ? "Request timed out." : error.message || "Login failed.")
+    }
+  }
+
   return (
     <section
       id="participate"
@@ -152,6 +189,10 @@ export default function FormSection() {
           onSubmit={(event) => {
             event.preventDefault()
             if (status === "loading") return
+            if (mode === "login") {
+              submitLogin()
+              return
+            }
             if (step === "details") {
               submitDetails()
             } else if (step === "otp") {
@@ -162,7 +203,31 @@ export default function FormSection() {
           }}
           className="glass-panel relative z-[9999] mt-10 max-w-3xl space-y-6 rounded-3xl p-8"
         >
-          {step === "details" && (
+          <div className="terminal-tabs inline-flex items-center gap-4">
+            <button
+              type="button"
+              className={`terminal-tab ${mode === "register" ? "terminal-tab-active" : ""}`}
+              onClick={() => {
+                setMode("register")
+                setStep("details")
+                setMessage("")
+              }}
+            >
+              Register
+            </button>
+            <button
+              type="button"
+              className={`terminal-tab ${mode === "login" ? "terminal-tab-active" : ""}`}
+              onClick={() => {
+                setMode("login")
+                setMessage("")
+              }}
+            >
+              Login
+            </button>
+          </div>
+
+          {mode === "register" && step === "details" && (
             <>
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2 md:col-span-2">
@@ -278,7 +343,37 @@ export default function FormSection() {
             </>
           )}
 
-          {step === "otp" && (
+          {mode === "login" && (
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="identifier">Username or Email</Label>
+                <Input
+                  id="identifier"
+                  placeholder="$cmd_user or email"
+                  value={identifier}
+                  onChange={(event) =>
+                    dispatch(updateField({ field: "identifier", value: event.target.value }))
+                  }
+                  required
+                />
+              </div>
+              <div className="space-y-2 md:col-span-2">
+                <Label htmlFor="login-password">Password</Label>
+                <Input
+                  id="login-password"
+                  type="password"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(event) =>
+                    dispatch(updateField({ field: "password", value: event.target.value }))
+                  }
+                  required
+                />
+              </div>
+            </div>
+          )}
+
+          {mode === "register" && step === "otp" && (
             <div className="space-y-2">
               <Label htmlFor="otp">Enter OTP</Label>
               <Input
@@ -293,7 +388,7 @@ export default function FormSection() {
             </div>
           )}
 
-          {step === "credentials" && (
+          {mode === "register" && step === "credentials" && (
             <div className="grid gap-6 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="username">Create Username</Label>
@@ -328,7 +423,7 @@ export default function FormSection() {
             </div>
           )}
 
-          {step === "done" && (
+          {mode === "register" && step === "done" && (
             <div className="text-sm text-white/70">
               Registration complete and session saved locally.
             </div>
@@ -341,13 +436,15 @@ export default function FormSection() {
               )}
               {status === "loading"
                 ? "Transmitting..."
-                : step === "details"
-                  ? "Send OTP"
-                  : step === "otp"
-                    ? "Verify OTP"
-                    : step === "credentials"
-                      ? "Create Account"
-                      : "Done"}
+                : mode === "login"
+                  ? "Login"
+                  : step === "details"
+                    ? "Send OTP"
+                    : step === "otp"
+                      ? "Verify OTP"
+                      : step === "credentials"
+                        ? "Create Account"
+                        : "Done"}
             </Button>
             <div className="text-xs uppercase tracking-[0.3em] text-white/40">
               {status === "loading" && "Encrypting submission..."}
