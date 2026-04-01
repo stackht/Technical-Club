@@ -21,7 +21,7 @@ function TraditionalVsUs() {
           transition={{ duration: 0.8 }}
           className="terminal-title font-orbitron text-3xl text-neonGreen"
         >
-          Traditional Club vs Branch Bliss
+          Traditional Club vs Code Medium
         </motion.h2>
 
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
@@ -53,7 +53,7 @@ function TraditionalVsUs() {
             <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(182,255,0,0.1),transparent_60%)]" />
             <div className="absolute -right-10 top-10 h-32 w-32 rounded-sm bg-lime-400/20 blur-3xl" />
             <h3 className="relative font-orbitron text-lg text-neonGreen">
-              Branch Bliss
+              Code Medium
             </h3>
             <ul className="relative mt-4 space-y-3 text-sm text-white/80">
               <li>Technical strike team — mini engineering ecosystem</li>
