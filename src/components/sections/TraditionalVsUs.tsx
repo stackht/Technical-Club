@@ -56,7 +56,7 @@ function TraditionalVsUs() {
               Code Medium
             </h3>
             <ul className="relative mt-4 space-y-3 text-sm text-white/80">
-              <li>Technical strike team — mini engineering ecosystem</li>
+              <li>Mini engineering ecosystem</li>
               <li>Lean, agile core of 20 selected members</li>
               <li>Real deployed products and systems</li>
               <li>2-stage Creative Pressure Test (mindset over credentials)</li>
@@ -72,3 +72,4 @@ function TraditionalVsUs() {
 }
 
 export default memo(TraditionalVsUs)
+

@@ -6,9 +6,9 @@ import { useGsapReveal } from "../hooks/useGsapReveal"
 
 const steps = [
   "Registration",
-  "Thinking Round",
-  "Team Interaction",
-  "Final Selection",
+  "Problem Statement Selection",
+  "Interview Round",
+  "Interview Results",
 ]
 
 function SelectionCriteria() {
