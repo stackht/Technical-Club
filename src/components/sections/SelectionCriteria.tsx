@@ -5,10 +5,19 @@ import { motion } from "framer-motion"
 import { useGsapReveal } from "../hooks/useGsapReveal"
 
 const steps = [
-  "Registration",
-  "Problem Statement Selection",
-  "Interview Round",
-  "Interview Results",
+  { title: "Registration", desc: "Submit your details to enter the pipeline." },
+  {
+    title: "Problem Statement Selection",
+    desc: "Pick a challenge that matches your interest and intent.",
+  },
+  {
+    title: "Interview Round",
+    desc: "Discuss your approach, thinking, and execution plan.",
+  },
+  {
+    title: "Interview Results",
+    desc: "Receive the final decision and next steps.",
+  },
 ]
 
 function SelectionCriteria() {
@@ -34,7 +43,7 @@ function SelectionCriteria() {
         <div className="mt-10 space-y-6 border-l border-neonGreen/40 pl-8">
           {steps.map((step, index) => (
             <motion.div
-              key={step}
+              key={step.title}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -42,10 +51,8 @@ function SelectionCriteria() {
               className="relative"
             >
               <div className="absolute -left-[45px] top-1 h-6 w-6 rounded-sm border border-neonGreen/70 bg-black shadow-[0_0_20px_rgba(0,255,0,0.8)]" />
-              <h3 className="font-orbitron text-lg text-white">{step}</h3>
-              <p className="mt-2 text-sm text-white/60">
-                Precision checks, collaboration cues, and leadership signals.
-              </p>
+              <h3 className="font-orbitron text-lg text-white">{step.title}</h3>
+              <p className="mt-2 text-sm text-white/60">{step.desc}</p>
             </motion.div>
           ))}
         </div>

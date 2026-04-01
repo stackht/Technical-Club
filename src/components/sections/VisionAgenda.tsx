@@ -22,7 +22,7 @@ function VisionAgenda() {
           transition={{ duration: 0.8 }}
           className="terminal-title font-orbitron text-3xl text-neonGreen"
         >
-          Our Vision & Agenda
+          Our Vision
         </motion.h2>
         <div className="mt-6">
           <motion.div
