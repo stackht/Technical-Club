@@ -6,13 +6,27 @@ import { motion } from "framer-motion"
 import { useGsapReveal } from "../hooks/useGsapReveal"
 
 const benefits = [
-  "Real startup experience",
-  "Hackathon exposure",
-  "Industry-level projects",
-  "Networking",
+  {
+    title: "For Students",
+    items: [
+      "Real industry experience and a stronger portfolio",
+      "Startup and product-building exposure",
+      "Internship readiness through structured sprints",
+      "Improved problem-solving under pressure",
+    ],
+  },
+  {
+    title: "For the College",
+    items: [
+      "Improved technical reputation nationally",
+      "Participation in national-level hackathons",
+      "Real product development under the college name",
+      "Industry collaboration and partnership opportunities",
+    ],
+  },
 ]
 
-function HoloCard({ text }: { text: string }) {
+function HoloCard({ title, items }: { title: string; items: string[] }) {
   const [springProps, api] = useSpring(() => ({
     rotateX: 0,
     rotateY: 0,
@@ -42,10 +56,12 @@ function HoloCard({ text }: { text: string }) {
       <animated.div>
         <div className="absolute inset-0 rounded-2xl border border-neonGreen/40 opacity-60" />
         <div className="absolute -right-6 -top-6 h-20 w-20 rounded-sm bg-neonGreen/20 blur-2xl" />
-        <h3 className="font-orbitron text-lg text-white">{text}</h3>
-        <p className="mt-3 text-sm text-white/60">
-          Unlock guided pathways, peer squads, and high-impact delivery.
-        </p>
+        <h3 className="font-orbitron text-lg text-white">{title}</h3>
+        <ul className="mt-4 space-y-2 text-sm text-white/60">
+          {items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
       </animated.div>
     </animated.div>
   )
@@ -74,7 +90,11 @@ function ParticipantBenefits() {
 
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           {benefits.map((benefit) => (
-            <HoloCard key={benefit} text={benefit} />
+            <HoloCard
+              key={benefit.title}
+              title={benefit.title}
+              items={benefit.items}
+            />
           ))}
         </div>
       </div>

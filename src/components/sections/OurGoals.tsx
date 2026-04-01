@@ -9,10 +9,11 @@ import { useGsapReveal } from "../hooks/useGsapReveal"
 gsap.registerPlugin(ScrollTrigger)
 
 const goals = [
-  { label: "Build 10 startups", value: 90 },
-  { label: "Win hackathons", value: 85 },
-  { label: "Publish research", value: 70 },
-  { label: "Build community", value: 95 },
+  { label: "Build industry-level products", value: 92 },
+  { label: "Prepare students for startups and internships", value: 88 },
+  { label: "Encourage research-driven development", value: 78 },
+  { label: "Develop AI-era engineers", value: 84 },
+  { label: "Establish the college as an innovation hub", value: 90 },
 ]
 
 function OurGoals() {
