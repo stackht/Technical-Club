@@ -238,7 +238,7 @@ export default function ChallengesPage() {
                   <div className="text-[10px] uppercase tracking-[0.28em] text-neonGreen/60">
                     {new Date(item.updatedAt).toLocaleString()}
                   </div>
-                  <div className="mt-2 text-sm text-white/80">{item.content}</div>
+                  <div className="mt-2 whitespace-pre-wrap text-sm text-white/80">{item.content}</div>
                 </div>
               ))}
               {!announcements.length && (
@@ -335,6 +335,7 @@ export default function ChallengesPage() {
     </main>
   )
 }
+
 
 
 

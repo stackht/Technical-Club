@@ -433,7 +433,7 @@ export default function AdminPage() {
                     <div className="text-xs uppercase tracking-[0.3em] text-neonGreen/60">
                       {new Date(item.updatedAt).toLocaleString()}
                     </div>
-                    <div className="mt-2 text-sm text-white/80">{item.content}</div>
+                    <div className="mt-2 whitespace-pre-wrap text-sm text-white/80">{item.content}</div>
                     <div className="mt-3 flex items-center gap-3">
                       <Button type="button" variant="ghost" onClick={() => editAnnouncement(item)}>
                         Edit
@@ -742,6 +742,7 @@ export default function AdminPage() {
     </main>
   )
 }
+
 
 
 
