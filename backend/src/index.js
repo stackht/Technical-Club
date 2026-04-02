@@ -696,6 +696,24 @@ app.post("/admin/participants/:id/review", adminRequired, async (req, res) => {
   }
 })
 
+app.delete("/admin/participants/:id", adminRequired, async (req, res) => {
+  try {
+    const userId = req.params.id
+    const user = await prisma.user.findUnique({ where: { id: userId } })
+    if (!user) {
+      return res.status(404).json({ ok: false, message: "User not found." })
+    }
+    await prisma.$transaction([
+      prisma.challengeUpload.deleteMany({ where: { userId } }),
+      prisma.userChallenge.deleteMany({ where: { userId } }),
+      prisma.otpToken.deleteMany({ where: { email: user.email } }),
+    ])
+    await prisma.user.delete({ where: { id: userId } })
+    return res.json({ ok: true })
+  } catch (error) {
+    return res.status(400).json({ ok: false, message: error.message })
+  }
+})
 app.get("/admin/participants/:id/upload", adminRequired, async (req, res) => {
   try {
     const userId = req.params.id
@@ -884,6 +902,9 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`API running on :${PORT}`)
 })
+
+
+
 
 
 
