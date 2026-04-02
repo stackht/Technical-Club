@@ -13,6 +13,11 @@ const challenges = [
   "AI for College Admin — Reduce workload for attendance, assignments, grading, communication, and administration.",
   "Smart Wearable for Color Vision Deficiency — Detect and communicate colors in real-time with fast, accurate feedback.",
   "OTP Fraud Prevention — Prevent or reduce OTP sharing fraud with a simple, secure user experience.",
+  "Pollution & Sanitation Awareness — Identify, report, and view unsafe or polluted areas in real-time to help people make informed decisions.",
+  "Generic Medicine Transparency — Ensure fair, transparent outcomes for patients, doctors, and pharma when prescribing by brand vs generic.",
+  "Next-Gen Authentication — Design a secure, user-friendly system resistant to modern hacking attempts.",
+  "Infrastructure Progress & Closures — Track project progress, closures, and real-time route impact updates for transparency.",
+  "Smart Camera Assistant — Help users choose the best settings in real-time based on environment and conditions.",
 ]
 
 export default function ChallengesPage() {
@@ -330,3 +335,6 @@ export default function ChallengesPage() {
     </main>
   )
 }
+
+
+
