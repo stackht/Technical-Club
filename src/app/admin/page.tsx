@@ -37,6 +37,7 @@ export default function AdminPage() {
   const [savingAnnouncement, setSavingAnnouncement] = useState(false)
   const [yearFilter, setYearFilter] = useState("ALL")
   const [branchFilter, setBranchFilter] = useState("ALL")
+  const [search, setSearch] = useState("")
   const prevScoresRef = useRef<Record<string, string>>({})
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
   const demoNames = useMemo(
@@ -280,13 +281,23 @@ export default function AdminPage() {
       if (branchFilter !== "ALL" && row.branch !== branchFilter) return false
       if (activeTab === "approved" && row.reviewStatus !== "APPROVED") return false
       if (activeTab === "rejected" && row.reviewStatus !== "REJECTED") return false
+      if (search.trim()) {
+        const term = search.trim().toLowerCase()
+        const haystack = `${row.name} ${row.email} ${row.phone}`.toLowerCase()
+        if (!haystack.includes(term)) return false
+      }
       return true
     })
-  }, [activeTab, branchFilter, rows, yearFilter])
+  }, [activeTab, branchFilter, rows, yearFilter, search])
+  const countableRows = useMemo(
+    () => filteredRows.filter((row) => !demoNames.has(row.name)),
+    [demoNames, filteredRows],
+  )
 
-  const totalCount = useMemo(
-    () => rows.filter((row) => !demoNames.has(row.name)).length,
-    [demoNames, rows],
+  const totalCount = useMemo(() => countableRows.length, [countableRows])
+  const doneCount = useMemo(
+    () => countableRows.filter((row) => row.interviewDone).length,
+    [countableRows],
   )
 
   const approvedCount = useMemo(
@@ -304,7 +315,6 @@ export default function AdminPage() {
       ).length,
     [demoNames, rows],
   )
-
   const groupedRows = useMemo(() => {
     const groups = new Map<string, { year: string; branch: string; items: typeof rows }>()
     for (const row of filteredRows) {
@@ -430,8 +440,15 @@ export default function AdminPage() {
             <div className="mt-2 overflow-auto">
               <div className="mb-4 flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.28em] text-white/70">
                 <div className="mr-auto text-xs uppercase tracking-[0.28em] text-neonGreen/70">
-                  Total: {totalCount} · Approved: {approvedCount} · Rejected: {rejectedCount}
+                  Total: {totalCount} · Done: {doneCount} · Approved: {approvedCount} · Rejected: {rejectedCount}
                 </div>
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder="Search name/email/phone"
+                  className="h-9 w-full rounded border border-neonGreen/30 bg-black/60 px-3 text-xs text-white/80 sm:w-64"
+                />
                 <label className="flex items-center gap-2">
                   <span>Year</span>
                   <select
@@ -700,3 +717,10 @@ export default function AdminPage() {
     </main>
   )
 }
+
+
+
+
+
+
+
