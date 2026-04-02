@@ -13,11 +13,11 @@ const challenges = [
   "AI for College Admin — Reduce workload for attendance, assignments, grading, communication, and administration.",
   "Smart Wearable for Color Vision Deficiency — Detect and communicate colors in real-time with fast, accurate feedback.",
   "OTP Fraud Prevention — Prevent or reduce OTP sharing fraud with a simple, secure user experience.",
-  "Pollution & Sanitation Awareness — Identify, report, and view unsafe or polluted areas in real-time to help people make informed decisions.",
-  "Generic Medicine Transparency — Ensure fair, transparent outcomes for patients, doctors, and pharma when prescribing by brand vs generic.",
-  "Next-Gen Authentication — Design a secure, user-friendly system resistant to modern hacking attempts.",
-  "Infrastructure Progress & Closures — Track project progress, closures, and real-time route impact updates for transparency.",
-  "Smart Camera Assistant — Help users choose the best settings in real-time based on environment and conditions.",
+  "In many parts of India, people are unaware of areas affected by pollution or poor sanitation (e.g., garbage accumulation). Design a system that allows users to identify, report, and view unsafe or polluted areas in real-time, helping others make informed decisions.",
+  "In India, doctors often prescribe medicines by brand name instead of generic name, which can impact cost and transparency. Design a system that ensures fair, transparent, and beneficial outcomes for patients, doctors, and pharmaceutical companies.",
+  "Current authentication systems (PIN, password, fingerprint, face unlock) all have vulnerabilities. Design a next-generation authentication system that is significantly more secure, user-friendly, and resistant to hacking attempts.",
+  "In India, citizens often lack visibility into real-time progress of infrastructure projects (roads, metro, railways, buildings). Additionally, people are unaware of areas temporarily closed or restricted due to construction, causing inconvenience and delays. Design a system that allows users to track construction progress, view closures, and get real-time route impact updates, ensuring transparency and better daily planning.",
+  "Many users struggle to choose the right camera settings (exposure, ISO, lighting, angle) for different environments. Design a solution that helps users capture the best possible photograph in real-time based on their surroundings and conditions.",
 ]
 
 export default function ChallengesPage() {
@@ -335,6 +335,8 @@ export default function ChallengesPage() {
     </main>
   )
 }
+
+
 
 
 
