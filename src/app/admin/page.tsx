@@ -8,7 +8,9 @@ import { Input } from "../../components/ui/input"
 export default function AdminPage() {
   const router = useRouter()
   const [ready, setReady] = useState(false)
-  const [activeTab, setActiveTab] = useState<"participants" | "announce">("participants")
+  const [activeTab, setActiveTab] = useState<
+    "participants" | "approved" | "rejected" | "announce"
+  >("participants")
   const [participants, setParticipants] = useState<
     {
       id: string
@@ -19,6 +21,7 @@ export default function AdminPage() {
       branch: string
       statementId: number | null
       hasUpload: boolean
+      interviewDone: boolean
       sScore: number | null
       pScore: number | null
       dScore: number | null
@@ -36,6 +39,10 @@ export default function AdminPage() {
   const [branchFilter, setBranchFilter] = useState("ALL")
   const prevScoresRef = useRef<Record<string, string>>({})
   const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || ""
+  const demoNames = useMemo(
+    () => new Set(["Hemant Thakur", "Nihal Mishra", "Vedh Pokharkar"]),
+    [],
+  )
 
   useEffect(() => {
     const token = localStorage.getItem("cmd_admin_token")
@@ -117,6 +124,25 @@ export default function AdminPage() {
     setParticipants((prev) =>
       prev.map((participant) =>
         participant.id === id ? { ...participant, reviewStatus: status } : participant,
+      ),
+    )
+  }
+
+  const toggleInterviewDone = async (id: string, value: boolean) => {
+    const token = localStorage.getItem("cmd_admin_token")
+    if (!token) return
+    const response = await fetch(`${apiBase}/admin/participants/${id}/review`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ interviewDone: value }),
+    })
+    if (!response.ok) return
+    setParticipants((prev) =>
+      prev.map((participant) =>
+        participant.id === id ? { ...participant, interviewDone: value } : participant,
       ),
     )
   }
@@ -252,9 +278,32 @@ export default function AdminPage() {
     return rows.filter((row) => {
       if (yearFilter !== "ALL" && row.year !== yearFilter) return false
       if (branchFilter !== "ALL" && row.branch !== branchFilter) return false
+      if (activeTab === "approved" && row.reviewStatus !== "APPROVED") return false
+      if (activeTab === "rejected" && row.reviewStatus !== "REJECTED") return false
       return true
     })
-  }, [branchFilter, rows, yearFilter])
+  }, [activeTab, branchFilter, rows, yearFilter])
+
+  const totalCount = useMemo(
+    () => rows.filter((row) => !demoNames.has(row.name)).length,
+    [demoNames, rows],
+  )
+
+  const approvedCount = useMemo(
+    () =>
+      rows.filter(
+        (row) => !demoNames.has(row.name) && row.reviewStatus === "APPROVED",
+      ).length,
+    [demoNames, rows],
+  )
+
+  const rejectedCount = useMemo(
+    () =>
+      rows.filter(
+        (row) => !demoNames.has(row.name) && row.reviewStatus === "REJECTED",
+      ).length,
+    [demoNames, rows],
+  )
 
   const groupedRows = useMemo(() => {
     const groups = new Map<string, { year: string; branch: string; items: typeof rows }>()
@@ -296,6 +345,20 @@ export default function AdminPage() {
               onClick={() => setActiveTab("participants")}
             >
               Participants
+            </button>
+            <button
+              type="button"
+              className={`terminal-tab ${activeTab === "approved" ? "terminal-tab-active" : ""}`}
+              onClick={() => setActiveTab("approved")}
+            >
+              Approved
+            </button>
+            <button
+              type="button"
+              className={`terminal-tab ${activeTab === "rejected" ? "terminal-tab-active" : ""}`}
+              onClick={() => setActiveTab("rejected")}
+            >
+              Rejected
             </button>
             <button
               type="button"
@@ -363,9 +426,12 @@ export default function AdminPage() {
             </div>
           )}
 
-          {activeTab === "participants" && (
+          {(activeTab === "participants" || activeTab === "approved" || activeTab === "rejected") && (
             <div className="mt-2 overflow-auto">
               <div className="mb-4 flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.28em] text-white/70">
+                <div className="mr-auto text-xs uppercase tracking-[0.28em] text-neonGreen/70">
+                  Total: {totalCount} · Approved: {approvedCount} · Rejected: {rejectedCount}
+                </div>
                 <label className="flex items-center gap-2">
                   <span>Year</span>
                   <select
@@ -466,6 +532,14 @@ export default function AdminPage() {
                         <div className="mt-3 text-xs text-white/70">
                           Status: {participant.reviewStatus}
                         </div>
+                        <label className="mt-2 flex items-center gap-2 text-xs text-white/70">
+                          <input
+                            type="checkbox"
+                            checked={participant.interviewDone}
+                            onChange={(event) => toggleInterviewDone(participant.id, event.target.checked)}
+                          />
+                          Interview Done
+                        </label>
                         <div className="mt-3 flex flex-wrap gap-2">
                           <Button
                             type="button"
@@ -493,125 +567,133 @@ export default function AdminPage() {
                   </div>
                 )}
               </div>
-              <table className="hidden w-full min-w-[920px] border-separate border-spacing-y-3 text-sm text-white/80 lg:table">
-              <thead className="text-left text-xs uppercase tracking-[0.25em] text-white/50">
-                <tr>
-                  <th className="py-2 pr-4">Name</th>
-                  <th className="py-2 pr-4">Email</th>
-                  <th className="py-2 pr-4">Phone</th>
-                  <th className="py-2 pr-4">Year</th>
-                  <th className="py-2 pr-4">Branch</th>
-                  <th className="py-2 pr-4">Sealed</th>
-                  <th className="py-2 pr-4">Doc</th>
-                  <th className="py-2 pr-4">S</th>
-                  <th className="py-2 pr-4">P</th>
-                  <th className="py-2 pr-4">D</th>
-                  <th className="py-2 pr-4">Status</th>
-                  <th className="py-2 pr-4">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {groupedRows.map((group) => (
-                  <Fragment key={`${group.year}-${group.branch}`}>
-                    <tr className="bg-black/60">
-                      <td colSpan={12} className="rounded-md px-3 py-2 text-xs uppercase tracking-[0.28em] text-neonGreen/70">
-                        {group.year} / {group.branch}
-                      </td>
-                    </tr>
-                    {group.items.map((participant) => (
-                      <tr key={participant.id} className="bg-black/40">
-                        <td className="rounded-l-md px-3 py-3">{participant.name}</td>
-                        <td className="px-3 py-3">{participant.email}</td>
-                        <td className="px-3 py-3">{participant.phone}</td>
-                        <td className="px-3 py-3">{participant.year}</td>
-                        <td className="px-3 py-3">{participant.branch}</td>
-                        <td className="px-3 py-3">
-                          {participant.statementId ? `#${participant.statementId}` : "—"}
-                        </td>
-                        <td className="px-3 py-3">
-                          {participant.hasUpload ? (
-                            <button
-                              type="button"
-                              className="text-neonGreen/80 hover:text-neonGreen"
-                              onClick={() => downloadUpload(participant.id)}
-                              aria-label="Download upload"
-                            >
-                              ⬇
-                            </button>
-                          ) : (
-                            "—"
-                          )}
-                        </td>
-                        <td className="px-3 py-3">
-                          <Input
-                            type="number"
-                            min={0}
-                            max={100}
-                            value={participant.scores.s}
-                            onChange={(event) =>
-                              updateScore(participant.id, "s", event.target.value)
-                            }
-                            className="h-9 w-16 bg-black/60"
-                          />
-                        </td>
-                        <td className="px-3 py-3">
-                          <Input
-                            type="number"
-                            min={0}
-                            max={100}
-                            value={participant.scores.p}
-                            onChange={(event) =>
-                              updateScore(participant.id, "p", event.target.value)
-                            }
-                            className="h-9 w-16 bg-black/60"
-                          />
-                        </td>
-                        <td className="px-3 py-3">
-                          <Input
-                            type="number"
-                            min={0}
-                            max={100}
-                            value={participant.scores.d}
-                            onChange={(event) =>
-                              updateScore(participant.id, "d", event.target.value)
-                            }
-                            className="h-9 w-16 bg-black/60"
-                          />
-                        </td>
-                        <td className="px-3 py-3 text-xs">{participant.reviewStatus}</td>
-                        <td className="rounded-r-md px-3 py-3">
-                          <div className="flex items-center gap-2">
-                            <Button
-                              type="button"
-                              className="px-4 py-2"
-                              onClick={() => submitReview(participant.id, "APPROVED")}
-                            >
-                              Approve
-                            </Button>
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              className="px-4 py-2"
-                              onClick={() => submitReview(participant.id, "REJECTED")}
-                            >
-                              Reject
-                            </Button>
-                          </div>
+              <table className="hidden w-full min-w-[1020px] border-separate border-spacing-y-3 text-sm text-white/80 lg:table">
+                <thead className="text-left text-xs uppercase tracking-[0.25em] text-white/50">
+                  <tr>
+                    <th className="py-2 pr-4">Name</th>
+                    <th className="py-2 pr-4">Email</th>
+                    <th className="py-2 pr-4">Phone</th>
+                    <th className="py-2 pr-4">Year</th>
+                    <th className="py-2 pr-4">Branch</th>
+                    <th className="py-2 pr-4">Sealed</th>
+                    <th className="py-2 pr-4">Doc</th>
+                    <th className="py-2 pr-4">S</th>
+                    <th className="py-2 pr-4">P</th>
+                    <th className="py-2 pr-4">D</th>
+                    <th className="py-2 pr-4">Status</th>
+                    <th className="py-2 pr-4">Interview</th>
+                    <th className="py-2 pr-4">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {groupedRows.map((group) => (
+                    <Fragment key={`${group.year}-${group.branch}`}>
+                      <tr className="bg-black/60">
+                        <td colSpan={13} className="rounded-md px-3 py-2 text-xs uppercase tracking-[0.28em] text-neonGreen/70">
+                          {group.year} / {group.branch}
                         </td>
                       </tr>
-                    ))}
-                  </Fragment>
-                ))}
-                {groupedRows.length === 0 && (
-                  <tr>
-                    <td colSpan={12} className="px-3 py-6 text-center text-white/50">
-                      No participants yet.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                      {group.items.map((participant) => (
+                        <tr key={participant.id} className="bg-black/40">
+                          <td className="rounded-l-md px-3 py-3">{participant.name}</td>
+                          <td className="px-3 py-3">{participant.email}</td>
+                          <td className="px-3 py-3">{participant.phone}</td>
+                          <td className="px-3 py-3">{participant.year}</td>
+                          <td className="px-3 py-3">{participant.branch}</td>
+                          <td className="px-3 py-3">
+                            {participant.statementId ? `#${participant.statementId}` : "—"}
+                          </td>
+                          <td className="px-3 py-3">
+                            {participant.hasUpload ? (
+                              <button
+                                type="button"
+                                className="text-neonGreen/80 hover:text-neonGreen"
+                                onClick={() => downloadUpload(participant.id)}
+                                aria-label="Download upload"
+                              >
+                                ⬇
+                              </button>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                          <td className="px-3 py-3">
+                            <Input
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={participant.scores.s}
+                              onChange={(event) =>
+                                updateScore(participant.id, "s", event.target.value)
+                              }
+                              className="h-9 w-16 bg-black/60"
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <Input
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={participant.scores.p}
+                              onChange={(event) =>
+                                updateScore(participant.id, "p", event.target.value)
+                              }
+                              className="h-9 w-16 bg-black/60"
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <Input
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={participant.scores.d}
+                              onChange={(event) =>
+                                updateScore(participant.id, "d", event.target.value)
+                              }
+                              className="h-9 w-16 bg-black/60"
+                            />
+                          </td>
+                          <td className="px-3 py-3 text-xs">{participant.reviewStatus}</td>
+                          <td className="px-3 py-3">
+                            <input
+                              type="checkbox"
+                              checked={participant.interviewDone}
+                              onChange={(event) => toggleInterviewDone(participant.id, event.target.checked)}
+                            />
+                          </td>
+                          <td className="rounded-r-md px-3 py-3">
+                            <div className="flex items-center gap-2">
+                              <Button
+                                type="button"
+                                className="px-4 py-2"
+                                onClick={() => submitReview(participant.id, "APPROVED")}
+                              >
+                                Approve
+                              </Button>
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                className="px-4 py-2"
+                                onClick={() => submitReview(participant.id, "REJECTED")}
+                              >
+                                Reject
+                              </Button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </Fragment>
+                  ))}
+                  {groupedRows.length === 0 && (
+                    <tr>
+                      <td colSpan={13} className="px-3 py-6 text-center text-white/50">
+                        No participants yet.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>

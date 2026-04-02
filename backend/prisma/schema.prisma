@@ -20,6 +20,7 @@ model User {
   pScore       Int?
   dScore       Int?
   reviewStatus String   @default("PENDING")
+  interviewDone Boolean @default(false)
   createdAt    DateTime @default(now())
   challenges   UserChallenge[]
   uploads      ChallengeUpload[]
@@ -78,3 +79,6 @@ model Announcement {
   updatedAt DateTime @updatedAt
   createdAt DateTime @default(now())
 }
+
+
+

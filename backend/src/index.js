@@ -109,6 +109,7 @@ const reviewSchema = z.object({
   pScore: z.number().int().min(0).max(100).nullable().optional(),
   dScore: z.number().int().min(0).max(100).nullable().optional(),
   reviewStatus: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
+  interviewDone: z.boolean().optional(),
 })
 
 const announcementSchema = z.object({
@@ -657,6 +658,7 @@ app.get("/admin/participants", adminRequired, async (req, res) => {
       pScore: user.pScore,
       dScore: user.dScore,
       reviewStatus: user.reviewStatus,
+      interviewDone: user.interviewDone,
       hasUpload: !!user.uploads?.[0],
     }))
     return res.json({ ok: true, participants: payload })
@@ -674,6 +676,7 @@ app.post("/admin/participants/:id/review", adminRequired, async (req, res) => {
     if (data.pScore !== undefined) update.pScore = data.pScore
     if (data.dScore !== undefined) update.dScore = data.dScore
     if (data.reviewStatus) update.reviewStatus = data.reviewStatus
+    if (data.interviewDone !== undefined) update.interviewDone = data.interviewDone
     const user = await prisma.user.update({
       where: { id: userId },
       data: update,
@@ -881,3 +884,9 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`API running on :${PORT}`)
 })
+
+
+
+
+
+
