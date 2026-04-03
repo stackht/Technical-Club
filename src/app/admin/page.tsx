@@ -1,3 +1,4 @@
+
 "use client"
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react"
@@ -5,34 +6,38 @@ import { useRouter } from "next/navigation"
 import { Button } from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
 
+type Participant = {
+  id: string
+  name: string
+  email: string
+  phone: string
+  year: string
+  branch: string
+  statementId: number | null
+  hasUpload: boolean
+  interviewDone: boolean
+  sScore: number | null
+  pScore: number | null
+  dScore: number | null
+  reviewStatus: string
+}
+
+type Announcement = {
+  id: number
+  content: string
+  updatedAt: string
+}
+
 export default function AdminPage() {
   const router = useRouter()
   const [ready, setReady] = useState(false)
   const [activeTab, setActiveTab] = useState<
     "participants" | "approved" | "rejected" | "announce"
   >("participants")
-  const [participants, setParticipants] = useState<
-    {
-      id: string
-      name: string
-      email: string
-      phone: string
-      year: string
-      branch: string
-      statementId: number | null
-      hasUpload: boolean
-      interviewDone: boolean
-      sScore: number | null
-      pScore: number | null
-      dScore: number | null
-      reviewStatus: string
-    }[]
-  >([])
+  const [participants, setParticipants] = useState<Participant[]>([])
   const [scores, setScores] = useState<Record<string, { s: string; p: string; d: string }>>({})
   const [announcement, setAnnouncement] = useState("")
-  const [announcements, setAnnouncements] = useState<
-    { id: number; content: string; updatedAt: string }[]
-  >([])
+  const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [editingId, setEditingId] = useState<number | null>(null)
   const [savingAnnouncement, setSavingAnnouncement] = useState(false)
   const [yearFilter, setYearFilter] = useState("ALL")
@@ -102,6 +107,7 @@ export default function AdminPage() {
     }))
   }
 
+  const submitReview = async (id: string, status: "APPROVED" | "REJECTED", name?: string) => {
     if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return
     const token = localStorage.getItem("cmd_admin_token")
     if (!token) return
@@ -241,13 +247,21 @@ export default function AdminPage() {
           setAnnouncements((prev) =>
             prev.map((item) =>
               item.id === editingId
-                ? { ...item, content: data.announcement?.content || announcement, updatedAt: data.announcement?.updatedAt || item.updatedAt }
+                ? {
+                    ...item,
+                    content: data.announcement?.content || announcement,
+                    updatedAt: data.announcement?.updatedAt || item.updatedAt,
+                  }
                 : item,
             ),
           )
         } else if (data.announcement) {
           setAnnouncements((prev) => [
-            { id: data.announcement.id, content: data.announcement.content, updatedAt: data.announcement.updatedAt },
+            {
+              id: data.announcement.id,
+              content: data.announcement.content,
+              updatedAt: data.announcement.updatedAt,
+            },
             ...prev,
           ])
         }
@@ -284,6 +298,7 @@ export default function AdminPage() {
       participants.map((participant) => ({
         ...participant,
         scores: scores[participant.id] || { s: "", p: "", d: "" },
+        isApproved: participant.reviewStatus === "APPROVED",
       })),
     [participants, scores],
   )
@@ -302,6 +317,7 @@ export default function AdminPage() {
       return true
     })
   }, [activeTab, branchFilter, rows, yearFilter, search])
+
   const countableRows = useMemo(
     () => filteredRows.filter((row) => !demoNames.has(row.name)),
     [demoNames, filteredRows],
@@ -328,6 +344,7 @@ export default function AdminPage() {
       ).length,
     [demoNames, rows],
   )
+
   const groupedRows = useMemo(() => {
     const groups = new Map<string, { year: string; branch: string; items: typeof rows }>()
     for (const row of filteredRows) {
@@ -488,7 +505,8 @@ export default function AdminPage() {
                     <option value="AIML">AIML</option>
                     <option value="IOT">IOT</option>
                     <option value="COMP">COMP</option>
-                    <option value="MECH">MECH</option>\n                    <option value="ELECT">ELECT</option>
+                    <option value="MECH">MECH</option>
+                    <option value="ELECT">ELECT</option>
                   </select>
                 </label>
               </div>
@@ -530,9 +548,7 @@ export default function AdminPage() {
                             min={0}
                             max={100}
                             value={participant.scores.s}
-                            onChange={(event) =>
-                              updateScore(participant.id, "s", event.target.value)
-                            }
+                            onChange={(event) => updateScore(participant.id, "s", event.target.value)}
                             className="h-9 bg-black/60 text-xs"
                             placeholder="S"
                           />
@@ -541,9 +557,7 @@ export default function AdminPage() {
                             min={0}
                             max={100}
                             value={participant.scores.p}
-                            onChange={(event) =>
-                              updateScore(participant.id, "p", event.target.value)
-                            }
+                            onChange={(event) => updateScore(participant.id, "p", event.target.value)}
                             className="h-9 bg-black/60 text-xs"
                             placeholder="P"
                           />
@@ -552,9 +566,7 @@ export default function AdminPage() {
                             min={0}
                             max={100}
                             value={participant.scores.d}
-                            onChange={(event) =>
-                              updateScore(participant.id, "d", event.target.value)
-                            }
+                            onChange={(event) => updateScore(participant.id, "d", event.target.value)}
                             className="h-9 bg-black/60 text-xs"
                             placeholder="D"
                           />
@@ -570,31 +582,33 @@ export default function AdminPage() {
                           />
                           Interview Done
                         </label>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          <Button
-                            type="button"
-                            className="px-4 py-2"
-                            onClick={() => submitReview(participant.id, "APPROVED", participant.name)}
-                          >
-                            Approve
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            className="px-4 py-2"
-                            onClick={() => submitReview(participant.id, "REJECTED", participant.name)}
-                          >
-                            Reject
-                          </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            className="px-4 py-2 text-red-300"
-                            onClick={() => deleteParticipant(participant.id, participant.name)}
-                          >
-                            🗑 Delete
-                          </Button>
-                        </div>
+                        {!participant.isApproved && (
+                          <div className="mt-3 flex flex-wrap gap-2">
+                            <Button
+                              type="button"
+                              className="px-4 py-2"
+                              onClick={() => submitReview(participant.id, "APPROVED", participant.name)}
+                            >
+                              Approve
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className="px-4 py-2"
+                              onClick={() => submitReview(participant.id, "REJECTED", participant.name)}
+                            >
+                              Reject
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              className="px-4 py-2 text-red-300"
+                              onClick={() => deleteParticipant(participant.id, participant.name)}
+                            >
+                              🗑 Delete
+                            </Button>
+                          </div>
+                        )}
                       </div>
                     ))}
                   </Fragment>
@@ -607,23 +621,23 @@ export default function AdminPage() {
               </div>
               <table className="hidden w-full min-w-[1020px] border-separate border-spacing-y-3 text-sm text-white/80 lg:table">
                 <thead className="text-left text-xs uppercase tracking-[0.25em] text-white/50">
-  <tr>
-    <th className="py-2 pr-4">Name</th>
-    <th className="py-2 pr-4">Email</th>
-    <th className="py-2 pr-4">Phone</th>
-    <th className="py-2 pr-4">Year</th>
-    <th className="py-2 pr-4">Branch</th>
-    <th className="py-2 pr-4">Sealed</th>
-    <th className="py-2 pr-4">Doc</th>
-    <th className="py-2 pr-4">S</th>
-    <th className="py-2 pr-4">P</th>
-    <th className="py-2 pr-4">D</th>
-    <th className="py-2 pr-4">Status</th>
-    <th className="py-2 pr-4">Interview</th>
-    <th className="py-2 pr-4">Action</th>
-    <th className="py-2 pr-4">Delete</th>
-  </tr>
-</thead>
+                  <tr>
+                    <th className="py-2 pr-4">Name</th>
+                    <th className="py-2 pr-4">Email</th>
+                    <th className="py-2 pr-4">Phone</th>
+                    <th className="py-2 pr-4">Year</th>
+                    <th className="py-2 pr-4">Branch</th>
+                    <th className="py-2 pr-4">Sealed</th>
+                    <th className="py-2 pr-4">Doc</th>
+                    <th className="py-2 pr-4">S</th>
+                    <th className="py-2 pr-4">P</th>
+                    <th className="py-2 pr-4">D</th>
+                    <th className="py-2 pr-4">Status</th>
+                    <th className="py-2 pr-4">Interview</th>
+                    <th className="py-2 pr-4">Action</th>
+                    <th className="py-2 pr-4">Delete</th>
+                  </tr>
+                </thead>
                 <tbody>
                   {groupedRows.map((group) => (
                     <Fragment key={`${group.year}-${group.branch}`}>
@@ -634,104 +648,104 @@ export default function AdminPage() {
                       </tr>
                       {group.items.map((participant) => (
                         <tr key={participant.id} className="bg-black/40">
-  <td className="rounded-l-md px-3 py-3">{participant.name}</td>
-  <td className="px-3 py-3">{participant.email}</td>
-  <td className="px-3 py-3">{participant.phone}</td>
-  <td className="px-3 py-3">{participant.year}</td>
-  <td className="px-3 py-3">{participant.branch}</td>
-  <td className="px-3 py-3">
-    {participant.statementId ? `#${participant.statementId}` : "—"}
-  </td>
-  <td className="px-3 py-3">
-    {participant.hasUpload ? (
-      <button
-        type="button"
-        className="text-neonGreen/80 hover:text-neonGreen"
-        onClick={() => downloadUpload(participant.id)}
-        aria-label="Download upload"
-      >
-        ⬇
-      </button>
-    ) : (
-      "—"
-    )}
-  </td>
-  <td className="px-3 py-3">
-    <Input
-      type="number"
-      min={0}
-      max={100}
-      value={participant.scores.s}
-      onChange={(event) => updateScore(participant.id, "s", event.target.value)}
-      className="h-9 w-16 bg-black/60"
-    />
-  </td>
-  <td className="px-3 py-3">
-    <Input
-      type="number"
-      min={0}
-      max={100}
-      value={participant.scores.p}
-      onChange={(event) => updateScore(participant.id, "p", event.target.value)}
-      className="h-9 w-16 bg-black/60"
-    />
-  </td>
-  <td className="px-3 py-3">
-    <Input
-      type="number"
-      min={0}
-      max={100}
-      value={participant.scores.d}
-      onChange={(event) => updateScore(participant.id, "d", event.target.value)}
-      className="h-9 w-16 bg-black/60"
-    />
-  </td>
-  <td className="px-3 py-3 text-xs">{participant.reviewStatus}</td>
-  <td className="px-3 py-3">
-    <input
-      type="checkbox"
-      checked={participant.interviewDone}
-      onChange={(event) => toggleInterviewDone(participant.id, event.target.checked)}
-    />
-  </td>
-  <td className="px-3 py-3">
-    {!participant.isApproved && (
-      <div className="flex items-center gap-2">
-        <Button
-          type="button"
-          className="px-4 py-2"
-          onClick={() => submitReview(participant.id, "APPROVED", participant.name)}
-        >
-          Approve
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          className="px-4 py-2"
-          onClick={() => submitReview(participant.id, "REJECTED", participant.name)}
-        >
-          Reject
-        </Button>
-      </div>
-    )}
-    {participant.isApproved && (
-      <span className="text-neonGreen/70">Approved</span>
-    )}
-  </td>
-  <td className="rounded-r-md px-3 py-3">
-    {!participant.isApproved && (
-      <button
-        type="button"
-        className="text-red-400 hover:text-red-300"
-        onClick={() => deleteParticipant(participant.id, participant.name)}
-        aria-label="Delete participant"
-      >
-        🗑
-      </button>
-    )}
-  </td>
-</tr>
-                    ))}
+                          <td className="rounded-l-md px-3 py-3">{participant.name}</td>
+                          <td className="px-3 py-3">{participant.email}</td>
+                          <td className="px-3 py-3">{participant.phone}</td>
+                          <td className="px-3 py-3">{participant.year}</td>
+                          <td className="px-3 py-3">{participant.branch}</td>
+                          <td className="px-3 py-3">
+                            {participant.statementId ? `#${participant.statementId}` : "—"}
+                          </td>
+                          <td className="px-3 py-3">
+                            {participant.hasUpload ? (
+                              <button
+                                type="button"
+                                className="text-neonGreen/80 hover:text-neonGreen"
+                                onClick={() => downloadUpload(participant.id)}
+                                aria-label="Download upload"
+                              >
+                                ⬇
+                              </button>
+                            ) : (
+                              "—"
+                            )}
+                          </td>
+                          <td className="px-3 py-3">
+                            <Input
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={participant.scores.s}
+                              onChange={(event) => updateScore(participant.id, "s", event.target.value)}
+                              className="h-9 w-16 bg-black/60"
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <Input
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={participant.scores.p}
+                              onChange={(event) => updateScore(participant.id, "p", event.target.value)}
+                              className="h-9 w-16 bg-black/60"
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            <Input
+                              type="number"
+                              min={0}
+                              max={100}
+                              value={participant.scores.d}
+                              onChange={(event) => updateScore(participant.id, "d", event.target.value)}
+                              className="h-9 w-16 bg-black/60"
+                            />
+                          </td>
+                          <td className="px-3 py-3 text-xs">{participant.reviewStatus}</td>
+                          <td className="px-3 py-3">
+                            <input
+                              type="checkbox"
+                              checked={participant.interviewDone}
+                              onChange={(event) => toggleInterviewDone(participant.id, event.target.checked)}
+                            />
+                          </td>
+                          <td className="px-3 py-3">
+                            {!participant.isApproved && (
+                              <div className="flex items-center gap-2">
+                                <Button
+                                  type="button"
+                                  className="px-4 py-2"
+                                  onClick={() => submitReview(participant.id, "APPROVED", participant.name)}
+                                >
+                                  Approve
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  className="px-4 py-2"
+                                  onClick={() => submitReview(participant.id, "REJECTED", participant.name)}
+                                >
+                                  Reject
+                                </Button>
+                              </div>
+                            )}
+                            {participant.isApproved && (
+                              <span className="text-neonGreen/70">Approved</span>
+                            )}
+                          </td>
+                          <td className="rounded-r-md px-3 py-3">
+                            {!participant.isApproved && (
+                              <button
+                                type="button"
+                                className="text-red-400 hover:text-red-300"
+                                onClick={() => deleteParticipant(participant.id, participant.name)}
+                                aria-label="Delete participant"
+                              >
+                                🗑
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
                     </Fragment>
                   ))}
                   {groupedRows.length === 0 && (
@@ -750,35 +764,3 @@ export default function AdminPage() {
     </main>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
