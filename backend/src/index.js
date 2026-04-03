@@ -100,7 +100,7 @@ const adminLoginSchema = z.object({
 })
 
 const challengeSchema = z.object({
-  statementId: z.number().int().min(1).max(8),
+  statementId: z.number().int().min(1).max(13),
   statement: z.string().min(10).max(1000),
 })
 
@@ -902,6 +902,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`API running on :${PORT}`)
 })
+
 
 
 
