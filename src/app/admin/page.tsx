@@ -46,7 +46,7 @@ export default function AdminPage() {
   )
 
   useEffect(() => {
-    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return\n    const token = localStorage.getItem("cmd_admin_token")
+    const token = localStorage.getItem("cmd_admin_token")
     if (!token) {
       router.replace("/admin/login")
       return
@@ -56,7 +56,7 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (!ready) return
-    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return\n    const token = localStorage.getItem("cmd_admin_token")
+    const token = localStorage.getItem("cmd_admin_token")
     if (!token) return
     const load = async () => {
       const response = await fetch(`${apiBase}/admin/participants`, {
@@ -103,7 +103,8 @@ export default function AdminPage() {
   }
 
   const submitReview = async (id: string, status: "APPROVED" | "REJECTED", name?: string) => {
-    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return\n    const token = localStorage.getItem("cmd_admin_token")
+    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return
+    const token = localStorage.getItem("cmd_admin_token")
     if (!token) return
     const current = scores[id] || { s: "", p: "", d: "" }
     const toNumber = (value: string) => (value === "" ? null : Number(value))
@@ -130,7 +131,8 @@ export default function AdminPage() {
   }
 
   const toggleInterviewDone = async (id: string, value: boolean) => {
-    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return\n    const token = localStorage.getItem("cmd_admin_token")
+    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return
+    const token = localStorage.getItem("cmd_admin_token")
     if (!token) return
     const response = await fetch(`${apiBase}/admin/participants/${id}/review`, {
       method: "POST",
@@ -149,7 +151,8 @@ export default function AdminPage() {
   }
 
   const deleteParticipant = async (id: string, name: string) => {
-    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return\n    const token = localStorage.getItem("cmd_admin_token")
+    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return
+    const token = localStorage.getItem("cmd_admin_token")
     if (!token) return
     const ok = window.confirm(`Delete ${name}? This cannot be undone.`)
     if (!ok) return
@@ -162,7 +165,8 @@ export default function AdminPage() {
   }
   useEffect(() => {
     if (!ready) return
-    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return\n    const token = localStorage.getItem("cmd_admin_token")
+    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return
+    const token = localStorage.getItem("cmd_admin_token")
     if (!token) return
     const timeouts: Record<string, ReturnType<typeof setTimeout>> = {}
     const saveScores = (id: string, payload: { sScore: number | null; pScore: number | null; dScore: number | null }) => {
@@ -200,7 +204,8 @@ export default function AdminPage() {
   }, [apiBase, participants, scores, ready])
 
   const downloadUpload = async (id: string) => {
-    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return\n    const token = localStorage.getItem("cmd_admin_token")
+    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return
+    const token = localStorage.getItem("cmd_admin_token")
     if (!token) return
     const response = await fetch(`${apiBase}/admin/participants/${id}/upload`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -219,7 +224,8 @@ export default function AdminPage() {
   }
 
   const saveAnnouncement = async () => {
-    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return\n    const token = localStorage.getItem("cmd_admin_token")
+    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return
+    const token = localStorage.getItem("cmd_admin_token")
     if (!token) return
     setSavingAnnouncement(true)
     try {
@@ -264,7 +270,8 @@ export default function AdminPage() {
   }
 
   const deleteAnnouncement = async (id: number) => {
-    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return\n    const token = localStorage.getItem("cmd_admin_token")
+    if (!window.confirm(`Confirm ${status.toLowerCase()} for ${name || "this participant"}?`)) return
+    const token = localStorage.getItem("cmd_admin_token")
     if (!token) return
     const response = await fetch(`${apiBase}/admin/announcement/${id}`, {
       method: "DELETE",
@@ -713,6 +720,8 @@ export default function AdminPage() {
     </main>
   )
 }
+
+
 
 
 
