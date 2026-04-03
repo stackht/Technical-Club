@@ -699,7 +699,43 @@ export default function AdminPage() {
       checked={participant.interviewDone}
       onChange={(event) => toggleInterviewDone(participant.id, event.target.checked)}
     />
-  </td>\n                          {!participant.isApproved && (\n                            <td className="px-3 py-3">\n                              <div className="flex items-center gap-2">\n                                <Button\n                                  type="button"\n                                  className="px-4 py-2"\n                                  onClick={() => submitReview(participant.id, "APPROVED", participant.name)}\n                                >\n                                  Approve\n                                </Button>\n                                <Button\n                                  type="button"\n                                  variant="ghost"\n                                  className="px-4 py-2"\n                                  onClick={() => submitReview(participant.id, "REJECTED", participant.name)}\n                                >\n                                  Reject\n                                </Button>\n                              </div>\n                            </td>\n                          )}\n                          {!participant.isApproved && (\n                            <td className="rounded-r-md px-3 py-3">\n                              <button\n                                type="button"\n                                className="text-red-400 hover:text-red-300"\n                                onClick={() => deleteParticipant(participant.id, participant.name)}\n                                aria-label="Delete participant"\n                              >\n                                🗑\n                              </button>\n                            </td>\n                          )}\n                          {participant.isApproved && (\n                            <td className="px-3 py-3" colSpan={2}>\n                              <span className="text-neonGreen/70">Approved</span>\n                            </td>\n                          )}
+  </td>
+  <td className="px-3 py-3">
+    {!participant.isApproved && (
+      <div className="flex items-center gap-2">
+        <Button
+          type="button"
+          className="px-4 py-2"
+          onClick={() => submitReview(participant.id, "APPROVED", participant.name)}
+        >
+          Approve
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          className="px-4 py-2"
+          onClick={() => submitReview(participant.id, "REJECTED", participant.name)}
+        >
+          Reject
+        </Button>
+      </div>
+    )}
+    {participant.isApproved && (
+      <span className="text-neonGreen/70">Approved</span>
+    )}
+  </td>
+  <td className="rounded-r-md px-3 py-3">
+    {!participant.isApproved && (
+      <button
+        type="button"
+        className="text-red-400 hover:text-red-300"
+        onClick={() => deleteParticipant(participant.id, participant.name)}
+        aria-label="Delete participant"
+      >
+        🗑
+      </button>
+    )}
+  </td>
 </tr>
                     ))}
                     </Fragment>
@@ -720,6 +756,7 @@ export default function AdminPage() {
     </main>
   )
 }
+
 
 
 
