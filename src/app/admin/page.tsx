@@ -487,7 +487,7 @@ export default function AdminPage() {
                     <option value="AIML">AIML</option>
                     <option value="IOT">IOT</option>
                     <option value="COMP">COMP</option>
-                    <option value="MECH">MECH</option>
+                    <option value="MECH">MECH</option>\n                    <option value="ELECT">ELECT</option>
                   </select>
                 </label>
               </div>
@@ -742,6 +742,7 @@ export default function AdminPage() {
     </main>
   )
 }
+
 
 
 
