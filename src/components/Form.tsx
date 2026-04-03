@@ -333,6 +333,9 @@ export default function FormSection() {
                       <option value="MECH" className="bg-[#0b140f] text-[#d8e6d8]">
                         MECH
                       </option>
+                      <option value="ELECT" className="bg-[#0b140f] text-[#d8e6d8]">
+                        ELECT
+                      </option>
                     </select>
                     <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-neonGreen/70">
                       ▾
@@ -459,4 +462,12 @@ export default function FormSection() {
     </section>
   )
 }
+
+
+
+
+
+
+
+
 
