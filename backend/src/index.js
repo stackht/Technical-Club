@@ -76,7 +76,7 @@ const requestOtpSchema = z.object({
   email: z.string().email(),
   phone: z.string().min(6),
   year: z.enum(["FE", "SE", "TE", "BE"]),
-  branch: z.enum(["AI&DS", "AIML", "IOT", "COMP", "MECH"]),
+  branch: z.enum(["AI&DS", "AIML", "IOT", "COMP", "MECH", "ELECT"]),
 })
 
 const verifyOtpSchema = z.object({
@@ -902,6 +902,7 @@ app.listen(PORT, () => {
   // eslint-disable-next-line no-console
   console.log(`API running on :${PORT}`)
 })
+
 
 
 
